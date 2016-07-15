@@ -21,6 +21,26 @@ config CAN_SJA1000_PLATFORM
 	  on embedded systems with OpenFirmware bindings, e.g. if you
 	  have a PowerPC based system you may want to enable this option.
 
+config LS1X_CAN0
+	bool "Loongson1 CAN Controller 0"
+	depends on CAN_SJA1000_PLATFORM
+	depends on MACH_LOONGSON1
+	default n
+	---help---
+	  This is the driver for the Loongson-1 SOC CAN Controller 0.
+	  Be careful, some module's Pin multiplexing with the CAN Controller 0,
+	  as I2C UART or SPI.
+	  
+config LS1X_CAN1
+	bool "Loongson1 CAN Controller 1"
+	depends on CAN_SJA1000_PLATFORM
+	depends on MACH_LOONGSON1
+	default n
+	---help---
+	  This is the driver for the Loongson-1 SOC CAN Controller 1.
+	  Be careful, some module's Pin multiplexing with the CAN Controller 1,
+	  as I2C UART or SPI.
+
 config CAN_EMS_PCMCIA
 	tristate "EMS CPC-CARD Card"
 	depends on PCMCIA

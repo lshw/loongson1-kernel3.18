@@ -28,6 +28,8 @@
 #include "i8042-x86ia64io.h"
 #elif defined(CONFIG_UNICORE32)
 #include "i8042-unicore32io.h"
+#elif defined(CONFIG_LOONGSON1_LS1A)
+#include "i8042-ls1x.h"
 #else
 #include "i8042-io.h"
 #endif

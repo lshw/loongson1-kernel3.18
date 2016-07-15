@@ -10,3 +10,6 @@ snd-sgi-hal2-objs := hal2.o
 obj-$(CONFIG_SND_AU1X00) += snd-au1x00.o
 obj-$(CONFIG_SND_SGI_O2) += snd-sgi-o2.o
 obj-$(CONFIG_SND_SGI_HAL2) += snd-sgi-hal2.o
+
+obj-$(CONFIG_SND_LS1X_LIB_AC97)	+= snd-ls1x-ac97-lib.o
+snd-ls1x-ac97-lib-objs		:= ls1x-ac97-lib.o

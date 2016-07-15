@@ -177,6 +177,31 @@ config PWM_LPSS_PLATFORM
 	  To compile this driver as a module, choose M here: the module
 	  will be called pwm-lpss-platform.
 
+config PWM_LS1X
+	tristate "Loongson1 PWM support"
+	depends on MACH_LOONGSON1
+	help
+	  Generic PWM framework driver for Loongson1.
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called pwm-ls1x.
+
+config PWM_LS1X_PWM0
+	bool "PWM0 support"
+	depends on PWM_LS1X
+
+config PWM_LS1X_PWM1
+	bool "PWM1 support"
+	depends on PWM_LS1X
+
+config PWM_LS1X_PWM2
+	bool "PWM2 support"
+	depends on PWM_LS1X
+
+config PWM_LS1X_PWM3
+	bool "PWM3 support"
+	depends on PWM_LS1X
+
 config PWM_MXS
 	tristate "Freescale MXS PWM support"
 	depends on ARCH_MXS && OF

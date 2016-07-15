@@ -1881,6 +1881,39 @@ config FB_68328
 	  Say Y here if you want to support the built-in frame buffer of
 	  the Motorola 68328 CPU family.
 
+config FB_LOONGSON1
+	tristate "Loongson1 framebuffer support"
+	depends on FB && MACH_LOONGSON1
+	select FB_CFB_FILLRECT
+	select FB_CFB_COPYAREA
+	select FB_CFB_IMAGEBLIT
+	default n
+	---help---
+	  Frame buffer driver for the built-in LCD controller in the Loongson1 
+	  processor.
+
+config LS1X_FB0
+	tristate "Display Controller 0"
+	depends on FB_LOONGSON1
+	default n
+
+config LS1X_FB1
+	tristate "Display Controller 1 (only for 1A vga)"
+	depends on FB_LOONGSON1
+	depends on LOONGSON1_LS1A
+	default n
+
+config FB_LS1X_I2C
+	bool "Enable DDC2 Support"
+	depends on FB_LOONGSON1
+	select FB_MODE_HELPERS
+	select VIDEOMODE_HELPERS
+	select FB_DDC
+	---help---
+	  This enables I2C support for Loongson1.  This is used
+	  only for getting EDID information from the attached display
+	  allowing for robust video mode handling and switching.
+
 config FB_PXA168
 	tristate "PXA168/910 LCD framebuffer support"
 	depends on FB && (CPU_PXA168 || CPU_PXA910)

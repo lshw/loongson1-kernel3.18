@@ -1180,6 +1180,37 @@ config SENSORS_SHTC1
 	  This driver can also be built as a module.  If so, the module
 	  will be called shtc1.
 
+config SENSORS_LS1X
+	tristate "loongson1 built-in ADC"
+	depends on LOONGSON1_LS1C
+	help
+	  If you say yes here you get support for the on-board ADCs of
+	  the Loongson 1c and other series of SoC
+
+	  This driver can also be built as a module. If so, the module
+	  will be called ls1x-hwmon.
+
+if SENSORS_LS1X
+
+choice
+	prompt  "CPU Selection"
+	default LOONGSON_1C300B
+
+config LOONGSON_1C300A
+	bool "Loongson 1C300A"
+
+config LOONGSON_1C300B
+	bool "Loongson 1C300B"
+endchoice
+
+config SENSORS_LS1X_RAW
+	bool "Include raw channel attributes in sysfs"
+	depends on SENSORS_LS1X
+	help
+	  Say Y here if you want to include raw copies of all the ADC
+	  channels in sysfs.
+endif
+
 config SENSORS_S3C
 	tristate "Samsung built-in ADC"
 	depends on S3C_ADC

@@ -185,7 +185,11 @@ static void chipset_init(struct net_device *dev)
 	struct sja1000_priv *priv = netdev_priv(dev);
 
 	/* set clock divider and output control register */
+#if defined(CONFIG_LS1X_CAN0) || defined(CONFIG_LS1X_CAN1)
+	sja1000_write_cmdreg(priv, 0x80);
+#else
 	priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
+#endif
 
 	/* set acceptance filter (accept all) */
 	priv->write_reg(priv, SJA1000_ACCC0, 0x00);

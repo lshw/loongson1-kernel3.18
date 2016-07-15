@@ -501,6 +501,25 @@ config MTD_NAND_JZ4740
 	help
 		Enables support for NAND Flash on JZ4740 SoC based boards.
 
+config MTD_NAND_LS1X
+	tristate "Support for NAND flash devices on Loongson1"
+	depends on MTD_NAND && MACH_LOONGSON1
+	help
+	  Enables support for NAND Flash on Loongson 1x based boards.
+
+choice
+	prompt "Multiplexing selection for LS1A"
+	depends on MTD_NAND_LS1X && LOONGSON1_LS1A
+	default NAND_USE_SPI1_PWM23
+
+config NAND_USE_LPC_PWM01
+	bool "nand d0-d5 use LCP and pwm01"
+
+config NAND_USE_SPI1_PWM23
+	bool "nand d0-d5 use SPI1 and pwm23"
+
+endchoice
+
 config MTD_NAND_FSMC
 	tristate "Support for NAND on ST Micros FSMC"
 	depends on PLAT_SPEAR || ARCH_NOMADIK || ARCH_U8500 || MACH_U300
