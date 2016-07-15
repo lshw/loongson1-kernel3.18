@@ -185,6 +185,22 @@ config SERIAL_8250_MANY_PORTS
 # Multi-port serial cards
 #
 
+config MULTIFUNC_CONFIG_SERAIL0
+	bool "multifunction serail 0 for loongson 1b"
+	depends on SERIAL_8250 && LOONGSON1_LS1B
+	default n
+	help
+	  Say Y here To enable multifunction on loongson 1B uart0 port.
+	  If unsure, say N.
+
+config MULTIFUNC_CONFIG_SERAIL1
+	bool "multifunction serail 1 for loongson 1b"
+	depends on SERIAL_8250 && LOONGSON1_LS1B
+	default n
+	help
+	  Say Y here To enable multifunction on loongson 1B uart1 port.
+	  If unsure, say N.
+
 config SERIAL_8250_FOURPORT
 	tristate "Support Fourport cards"
 	depends on SERIAL_8250 != n && ISA && SERIAL_8250_MANY_PORTS

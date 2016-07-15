@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2011 Zhang, Keguang <keguang.zhang@gmail.com>
+ * Copyright (c) 2015 Tang Haifeng <tanghaifeng-gz@loongson.cn> or <pengren.mcu@qq.com>
  *
  * IRQ mappings for Loongson 1
  *
@@ -36,15 +37,33 @@
 #define LS1X_IRQ_BASE			MIPS_CPU_IRQS
 #define LS1X_IRQ(n, x)			(LS1X_IRQ_BASE + (n << 5) + (x))
 
+#if defined(CONFIG_LOONGSON1_LS1C)
+#define LS1X_UART0_IRQ			LS1X_IRQ(0, 0)
+#define LS1X_UART1_IRQ			LS1X_IRQ(0, 4)
+#define LS1X_UART2_IRQ			LS1X_IRQ(0, 5)
+#define LS1X_UART3_IRQ			LS1X_IRQ(0, 29)
+#define LS1X_UART4_IRQ			LS1X_IRQ(1, 5)
+#define LS1X_UART5_IRQ			LS1X_IRQ(1, 6)
+#define LS1X_UART6_IRQ			LS1X_IRQ(1, 7)
+#define LS1X_UART7_IRQ			LS1X_IRQ(1, 8)
+#define LS1X_UART8_IRQ			LS1X_IRQ(1, 9)
+#define LS1X_UART9_IRQ			LS1X_IRQ(1, 13)
+#define LS1X_UART10_IRQ			LS1X_IRQ(1, 14)
+#define LS1X_UART11_IRQ			LS1X_IRQ(1, 15)
+#else
 #define LS1X_UART0_IRQ			LS1X_IRQ(0, 2)
 #define LS1X_UART1_IRQ			LS1X_IRQ(0, 3)
 #define LS1X_UART2_IRQ			LS1X_IRQ(0, 4)
 #define LS1X_UART3_IRQ			LS1X_IRQ(0, 5)
+#endif
 #define LS1X_CAN0_IRQ			LS1X_IRQ(0, 6)
 #define LS1X_CAN1_IRQ			LS1X_IRQ(0, 7)
 #define LS1X_SPI0_IRQ			LS1X_IRQ(0, 8)
 #define LS1X_SPI1_IRQ			LS1X_IRQ(0, 9)
 #define LS1X_AC97_IRQ			LS1X_IRQ(0, 10)
+#define LS1X_I2S_IRQ			LS1X_IRQ(0, 10)
+#define LS1X_MS_IRQ				LS1X_IRQ(0, 11)
+#define LS1X_KB_IRQ				LS1X_IRQ(0, 12)
 #define LS1X_DMA0_IRQ			LS1X_IRQ(0, 13)
 #define LS1X_DMA1_IRQ			LS1X_IRQ(0, 14)
 #define LS1X_DMA2_IRQ			LS1X_IRQ(0, 15)
@@ -60,14 +79,55 @@
 #define LS1X_TOY_INT2_IRQ		LS1X_IRQ(0, 26)
 #define LS1X_RTC_TICK_IRQ		LS1X_IRQ(0, 27)
 #define LS1X_TOY_TICK_IRQ		LS1X_IRQ(0, 28)
+#ifdef CONFIG_LOONGSON1_LS1B
+#define LS1X_UART4_IRQ	LS1X_IRQ(0, 29)
+#define LS1X_UART5_IRQ	LS1X_IRQ(0, 30)
+#endif
+#if defined(CONFIG_LOONGSON1_LS1C)
+#define LS1X_SDIO_IRQ	LS1X_IRQ(0, 31)
+#endif
 
 #define LS1X_EHCI_IRQ			LS1X_IRQ(1, 0)
 #define LS1X_OHCI_IRQ			LS1X_IRQ(1, 1)
+
+#if defined(CONFIG_LOONGSON1_LS1C)
+#define LS1X_OTG_IRQ				LS1X_IRQ(1, 2)
+#define LS1X_GMAC0_IRQ			LS1X_IRQ(1, 3)
+#define LS1X_CAM_IRQ				LS1X_IRQ(1, 4)
+#else
 #define LS1X_GMAC0_IRQ			LS1X_IRQ(1, 2)
 #define LS1X_GMAC1_IRQ			LS1X_IRQ(1, 3)
+#define LS1X_SATA_IRQ			LS1X_IRQ(1, 4)
+#define LS1A_GPU_IRQ				LS1X_IRQ(1, 5)
+#endif
 
-#define LS1X_IRQS		(LS1X_IRQ(4, 31) + 1 - LS1X_IRQ_BASE)
+/* ls1c300b */
+#define LS1X_I2C2_IRQ			LS1X_IRQ(1, 17)
+#define LS1X_I2C1_IRQ			LS1X_IRQ(1, 18)
+#define LS1X_I2C0_IRQ			LS1X_IRQ(1, 19)
 
-#define NR_IRQS			(MIPS_CPU_IRQS + LS1X_IRQS)
+#define LS1X_GPIO_FIRST_IRQ		LS1X_IRQ(2, 0)
+#if defined(CONFIG_LOONGSON1_LS1A)
+#define LS1X_GPIO_IRQ_COUNT 128
+#elif	defined(CONFIG_LOONGSON1_LS1B)
+#define LS1X_GPIO_IRQ_COUNT 96
+#elif	defined(CONFIG_LOONGSON1_LS1C)
+#define LS1X_GPIO_IRQ_COUNT 128
+#endif
+#define LS1X_GPIO_LAST_IRQ  (LS1X_GPIO_FIRST_IRQ + LS1X_GPIO_IRQ_COUNT-1)
+
+/* Interrupt controllers */
+#if defined(CONFIG_LOONGSON1_LS1A)
+#define INTN 5
+#elif defined(CONFIG_LOONGSON1_LS1B)
+#define INTN 4
+#elif defined(CONFIG_LOONGSON1_LS1C)
+#define INTN 5
+#endif
+#define LS1X_IRQS		(LS1X_IRQ(INTN, 0) - LS1X_IRQ_BASE)
+
+/* IRQ号可能不够用，所以预分配更多IRQ号 */
+//#define NR_IRQS			(MIPS_CPU_IRQS + LS1X_IRQS)
+#define NR_IRQS			320
 
 #endif /* __ASM_MACH_LOONGSON1_IRQ_H */

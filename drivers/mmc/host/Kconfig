@@ -504,6 +504,16 @@ config MMC_S3C_DMA
 
 endchoice
 
+config MMC_LS1X
+	tristate "Loongson 1C SD/MMC Card Interface support"
+	depends on LOONGSON1_LS1C
+	help
+	  This selects a driver for the MCI interface found in ls1x cpu.
+	  If you have a board based on one of those and a MMC/SD
+	  slot, say Y or M here.
+
+	  If unsure, say N.
+
 config MMC_SDRICOH_CS
 	tristate "MMC/SD driver for Ricoh Bay1Controllers"
 	depends on PCI && PCMCIA

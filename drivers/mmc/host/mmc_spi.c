@@ -1153,8 +1153,10 @@ static void mmc_spi_initsequence(struct mmc_spi_host *host)
 	host->spi->mode |= SPI_CS_HIGH;
 	if (spi_setup(host->spi) != 0) {
 		/* Just warn; most cards work without it. */
+#ifndef CONFIG_CPU_LOONGSON1C
 		dev_warn(&host->spi->dev,
 				"can't change chip-select polarity\n");
+#endif
 		host->spi->mode &= ~SPI_CS_HIGH;
 	} else {
 		mmc_spi_readbytes(host, 18);

@@ -446,7 +446,7 @@ static int tsc2007_probe(struct i2c_client *client,
 
 	err = devm_request_threaded_irq(&client->dev, ts->irq,
 					tsc2007_hard_irq, tsc2007_soft_irq,
-					IRQF_ONESHOT,
+					IRQF_ONESHOT | IRQF_TRIGGER_FALLING,
 					client->dev.driver->name, ts);
 	if (err) {
 		dev_err(&client->dev, "Failed to request irq %d: %d\n",

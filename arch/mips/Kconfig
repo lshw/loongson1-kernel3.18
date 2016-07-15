@@ -300,7 +300,11 @@ config MACH_LOONGSON
 
 config MACH_LOONGSON1
 	bool "Loongson 1 family of machines"
+	select CPU_LOONGSON1
+	select SYS_HAS_CPU_MIPS32_R1
+	select SYS_HAS_CPU_MIPS32_R2
 	select SYS_SUPPORTS_ZBOOT
+	select ARCH_REQUIRE_GPIOLIB
 	help
 	  This enables support for the Loongson 1 based machines.
 
@@ -1228,14 +1232,6 @@ config CPU_LOONGSON2F
 	  have a similar programming interface with FPGA northbridge used in
 	  Loongson2E.
 
-config CPU_LOONGSON1B
-	bool "Loongson 1B"
-	depends on SYS_HAS_CPU_LOONGSON1B
-	select CPU_LOONGSON1
-	help
-	  The Loongson 1B is a 32-bit SoC, which implements the MIPS32
-	  release 2 instruction set.
-
 config CPU_MIPS32_R1
 	bool "MIPS32 Release 1"
 	depends on SYS_HAS_CPU_MIPS32_R1
@@ -1569,11 +1565,22 @@ config CPU_LOONGSON2
 
 config CPU_LOONGSON1
 	bool
-	select CPU_MIPS32
-	select CPU_MIPSR2
 	select CPU_HAS_PREFETCH
 	select CPU_SUPPORTS_32BIT_KERNEL
 	select CPU_SUPPORTS_HIGHMEM
+
+config CPU_LOONGSON1A
+	bool
+	default y if SYS_HAS_CPU_LOONGSON1A
+
+config CPU_LOONGSON1B
+	bool
+	default y if SYS_HAS_CPU_LOONGSON1B
+
+config CPU_LOONGSON1C
+	select USE_OF
+	bool
+	default y if SYS_HAS_CPU_LOONGSON1C
 
 config CPU_BMIPS32_3300
 	select SMP_UP if SMP
@@ -1608,7 +1615,13 @@ config SYS_HAS_CPU_LOONGSON2F
 	select CPU_SUPPORTS_ADDRWINCFG if 64BIT
 	select CPU_SUPPORTS_UNCACHED_ACCELERATED
 
+config SYS_HAS_CPU_LOONGSON1A
+	bool
+
 config SYS_HAS_CPU_LOONGSON1B
+	bool
+
+config SYS_HAS_CPU_LOONGSON1C
 	bool
 
 config SYS_HAS_CPU_MIPS32_R1

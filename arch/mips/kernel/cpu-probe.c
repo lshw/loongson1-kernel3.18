@@ -826,7 +826,13 @@ static inline void cpu_probe_legacy(struct cpuinfo_mips *c, unsigned int cpu)
 
 		switch (c->processor_id & PRID_REV_MASK) {
 		case PRID_REV_LOONGSON1B:
+		#if defined(CONFIG_LOONGSON1_LS1A)
+			__cpu_name[cpu] = "Loongson 1A";
+		#elif defined(CONFIG_LOONGSON1_LS1B)
 			__cpu_name[cpu] = "Loongson 1B";
+		#elif defined(CONFIG_LOONGSON1_LS1C)
+			__cpu_name[cpu] = "Loongson 1C";
+		#endif
 			break;
 		}
 

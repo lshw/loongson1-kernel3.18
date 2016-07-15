@@ -64,8 +64,33 @@ static int rtl8211e_config_intr(struct phy_device *phydev)
 	return err;
 }
 
+static int rtl8201el_config_init(struct phy_device *phydev)
+{
+	int err = 0;
+
+	/*  设置寄存器25，使能RMII模式 */
+#if defined(CONFIG_LS1X_GMAC0_RMII)
+//	__raw_writel(0x400, (void __iomem *)KSEG1ADDR(LS1X_GMAC0_BASE + 0x14));
+	err = phy_write(phydev, 25, 0x0400);
+#endif
+//	__raw_writel(0xe4b, (void __iomem *)KSEG1ADDR(LS1X_GMAC0_BASE + 0x10));
+
+	return err;
+}
+
 static struct phy_driver realtek_drvs[] = {
 	{
+		.phy_id         = 0x001cc815,
+		.name           = "RTL8201EL Ethernet",
+		.phy_id_mask    = 0x001fffff,
+		.features       = PHY_BASIC_FEATURES,
+		.flags          = PHY_HAS_INTERRUPT,
+		.soft_reset     = &genphy_soft_reset,
+		.config_init    = &rtl8201el_config_init,
+		.config_aneg    = &genphy_config_aneg,
+		.read_status    = &genphy_read_status,
+		.driver         = { .owner = THIS_MODULE,},
+	}, {
 		.phy_id         = 0x00008201,
 		.name           = "RTL8201CP Ethernet",
 		.phy_id_mask    = 0x0000ffff,

@@ -33,6 +33,12 @@ MODULE_DEVICE_TABLE(of, es8328_of_match);
 static int es8328_i2c_probe(struct i2c_client *i2c,
 			    const struct i2c_device_id *id)
 {
+#if 0 /* 调试录音时使用 */
+	i2c_smbus_write_byte_data(i2c, 0x03, 0x00);
+	i2c_smbus_write_byte_data(i2c, 0x04, 0x3c);
+	i2c_smbus_write_byte_data(i2c, 0x2b, 0x80);
+//	i2c_smbus_write_byte_data(i2c, 0x02, 0x00);
+#endif
 	return es8328_probe(&i2c->dev,
 			devm_regmap_init_i2c(i2c, &es8328_regmap_config));
 }

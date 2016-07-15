@@ -127,6 +127,7 @@ obj-$(CONFIG_M54xx_WATCHDOG) += m54xx_wdt.o
 obj-$(CONFIG_XILINX_WATCHDOG) += of_xilinx_wdt.o
 
 # MIPS Architecture
+obj-$(CONFIG_LS1X_WDT) += ls1x_wdt.o
 obj-$(CONFIG_ATH79_WDT) += ath79_wdt.o
 obj-$(CONFIG_BCM47XX_WDT) += bcm47xx_wdt.o
 obj-$(CONFIG_BCM63XX_WDT) += bcm63xx_wdt.o

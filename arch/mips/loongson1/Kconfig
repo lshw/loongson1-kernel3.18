@@ -3,10 +3,26 @@ if MACH_LOONGSON1
 choice
 	prompt "Machine Type"
 
+config LOONGSON1_LS1A
+	bool "Loongson LS1A board"
+	select CEVT_R4K if !MIPS_EXTERNAL_TIMER
+	select CSRC_R4K if !MIPS_EXTERNAL_TIMER
+	select SYS_HAS_CPU_LOONGSON1A
+	select DMA_NONCOHERENT
+	select BOOT_ELF32
+	select IRQ_CPU
+	select SYS_SUPPORTS_32BIT_KERNEL
+	select SYS_SUPPORTS_LITTLE_ENDIAN
+	select SYS_SUPPORTS_HIGHMEM
+	select SYS_SUPPORTS_MIPS16
+	select SYS_HAS_EARLY_PRINTK
+	select USE_GENERIC_EARLY_PRINTK_8250
+	select COMMON_CLK
+
 config LOONGSON1_LS1B
 	bool "Loongson LS1B board"
-	select CEVT_R4K
-	select CSRC_R4K
+	select CEVT_R4K if !MIPS_EXTERNAL_TIMER
+	select CSRC_R4K if !MIPS_EXTERNAL_TIMER
 	select SYS_HAS_CPU_LOONGSON1B
 	select DMA_NONCOHERENT
 	select BOOT_ELF32
@@ -16,8 +32,96 @@ config LOONGSON1_LS1B
 	select SYS_SUPPORTS_HIGHMEM
 	select SYS_SUPPORTS_MIPS16
 	select SYS_HAS_EARLY_PRINTK
+	select USE_GENERIC_EARLY_PRINTK_8250
 	select COMMON_CLK
 
+if LOONGSON1_LS1B
+
+choice
+	prompt "Loongson LS1B board config"
+	default LS1B_DEV_BOARD
+
+config LS1B_DEV_BOARD
+	bool "LSGZ_1B_DEV board"
+
+config LS1B_CORE_BOARD
+	bool "LS1B_CORE board"
 endchoice
+
+endif
+
+config LOONGSON1_LS1C
+	bool "Loongson LS1C board"
+	select CEVT_R4K if !MIPS_EXTERNAL_TIMER
+	select CSRC_R4K if !MIPS_EXTERNAL_TIMER
+	select SYS_HAS_CPU_LOONGSON1C
+	select DMA_NONCOHERENT
+	select BOOT_ELF32
+	select IRQ_CPU
+	select SYS_SUPPORTS_32BIT_KERNEL
+	select SYS_SUPPORTS_LITTLE_ENDIAN
+	select SYS_SUPPORTS_HIGHMEM
+	select SYS_SUPPORTS_MIPS16
+	select SYS_HAS_EARLY_PRINTK
+	select USE_GENERIC_EARLY_PRINTK_8250
+	select COMMON_CLK
+
+if LOONGSON1_LS1C
+
+choice
+	prompt "Loongson LS1C board config"
+	default LS1C_CBII_V0A_BOARD
+
+config LS1C_CBII_V0A_BOARD
+	bool "LS1C_CBII_V0A board (ls1c300b)"
+	select LOONGSON1_LS1C300B
+
+config LS1C_CBV0B_BOARD
+	bool "LS1C_CB_V0B board (ls1c300a)"
+	select LOONGSON1_LS1C300A
+
+config LS1C_OPENLOONGSON_ROBOT_BOARD
+	bool "openloongson robot ctrl board (ls1c300a)"
+	select LOONGSON1_LS1C300A
+endchoice
+
+config LOONGSON1_LS1C300A
+	bool
+
+config LOONGSON1_LS1C300B
+	bool
+endif
+
+endchoice
+
+
+
+config PWM_LS1X
+	tristate "Loongson1 PWM support"
+	select HAVE_PWM
+	help
+	  Generic PWM framework driver for Loongson1.
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called pwm-ls1x.
+
+config PWM_LS1X_PWM0
+	bool "PWM0 support"
+	depends on PWM_LS1X
+
+config PWM_LS1X_PWM1
+	bool "PWM1 support"
+	depends on PWM_LS1X
+
+config PWM_LS1X_PWM2
+	bool "PWM2 support"
+	depends on PWM_LS1X
+
+config PWM_LS1X_PWM3
+	bool "PWM3 support"
+	depends on PWM_LS1X
+
+config HAVE_PWM
+	bool
 
 endif # MACH_LOONGSON1

@@ -308,6 +308,54 @@ config SPI_OC_TINY
 	help
 	  This is the driver for OpenCores tiny SPI master controller.
 
+config SPI_LS1X
+	tristate "Loongson1 SPI"
+	depends on GPIOLIB && MACH_LOONGSON1
+	select SPI_BITBANG
+	help
+	  This is the driver for Loongson1 SPI master controller.
+
+if SPI_LS1X
+
+config SPI_LS1X_SPI0
+	bool "Loongson1 spi0 support"
+	default y
+	depends on SPI_LS1X
+
+config SPI_LS1X_SPI1
+	bool "Loongson1 spi1 support"
+	default n
+	depends on SPI_LS1X
+
+choice
+	prompt  "ls1x spi cs mode"
+	depends on SPI_LS1X
+	default SPI_CS
+
+config SPI_CS_USED_GPIO
+	bool "gpio mode"
+
+config SPI_CS
+	bool "softcs mode"
+endchoice
+
+choice
+	prompt  "ls1x spi control mode"
+	depends on SPI_LS1X
+	default SPI_POLL_MODE
+	help
+	  For performace issue, at sclk > 200KHz, interrupt should not be used and 
+	  polling will get better result.
+
+config SPI_POLL_MODE
+	bool "poll mode"
+
+config SPI_IRQ_MODE
+	bool "irq mode"
+endchoice
+
+endif
+
 config SPI_OCTEON
 	tristate "Cavium OCTEON SPI controller"
 	depends on CAVIUM_OCTEON_SOC

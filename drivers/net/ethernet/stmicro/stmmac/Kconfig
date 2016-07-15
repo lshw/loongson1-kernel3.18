@@ -13,6 +13,25 @@ config STMMAC_ETH
 
 if STMMAC_ETH
 
+config LS1X_GMAC0
+	bool "Loongson1 GMAC0 support"
+	default y
+	depends on LOONGSON1_LS1A || LOONGSON1_LS1B || LOONGSON1_LS1C
+
+choice
+	prompt "ls1x gmac0 config"
+	depends on LS1X_GMAC0 && LOONGSON1_LS1C
+
+config LS1X_GMAC0_RMII
+	bool "100Mb RMII mode"
+	depends on LOONGSON1_LS1C
+endchoice
+
+config LS1X_GMAC1
+	bool "Loongson1 GMAC1 support"
+	default n
+	depends on LOONGSON1_LS1A || LOONGSON1_LS1B
+
 config STMMAC_PLATFORM
 	bool "STMMAC Platform bus support"
 	depends on STMMAC_ETH
