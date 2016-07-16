@@ -194,11 +194,11 @@ static void ls1x_i2c_setup(void)
 	 * PIN3    GPIO76    I2C_SDA1
 	 * PIN6    GPIO77    I2C_SCL1
 	 */
-	__raw_writel(__raw_readl(LS1X_CBUS_FIRST2)   & 0xFFCFCFFF, LS1X_CBUS_FIRST2);
-	__raw_writel(__raw_readl(LS1X_CBUS_SECOND2)  & 0xFFCFCFFF, LS1X_CBUS_SECOND2);
-	__raw_writel(__raw_readl(LS1X_CBUS_THIRD2)   & 0xFFCFCFFF, LS1X_CBUS_THIRD2);
-	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT2) | 0x00303000, LS1X_CBUS_FOURTHT2);
-	__raw_writel(__raw_readl(LS1X_CBUS_FIFTHT2)  & 0xFFCFCFFF, LS1X_CBUS_FIFTHT2);
+	__raw_writel(__raw_readl(LS1X_CBUS_FIRST2)   & 0xFFCFCFFF, LS1X_CBUS_FIRST2);  //P86,P85,P78,P77 Function1 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_SECOND2)  & 0xFFCFCFFF, LS1X_CBUS_SECOND2); //P86,P85,P78,P77 Function2 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_THIRD2)   & 0xFFCFCFFF, LS1X_CBUS_THIRD2);  //P86,P85,P78,P77 Function3 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT2) | 0x00303000, LS1X_CBUS_FOURTHT2);//P86,P85,P78,P77 Function4 enable
+	__raw_writel(__raw_readl(LS1X_CBUS_FIFTHT2)  & 0xFFCFCFFF, LS1X_CBUS_FIFTHT2); //P86,P85,P78,P77 Function5 disable
 }
 #endif
 
