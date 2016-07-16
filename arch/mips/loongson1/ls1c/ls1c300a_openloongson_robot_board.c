@@ -362,6 +362,50 @@ static struct platform_device *ls1c_platform_devices[] __initdata = {
 static int __init ls1c_platform_init(void)
 {
 	int err;
+#ifdef CONFIG_LS1C_OPENLOONGSON_V2_BOARD
+	//__raw_writel(0,LS1X_CBUS_FIFTHT0);//disable p0-p31 Function5 disable
+	//__raw_writel(0,LS1X_CBUS_FIFTHT1);//disable p31-p63 Function5 disable
+	//__raw_writel(0,LS1X_CBUS_FIFTHT2);//disable p63-p95 Function5 disable
+	//__raw_writel(0,LS1X_CBUS_FIFTHT3);//disable p96-p127 Function5 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT1) & (~0x030C3000), LS1X_CBUS_FOURTHT1);//P44,P45,P50,P51,P56,P57 Function4 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT0) & (~0x00780000), LS1X_CBUS_FOURTHT0);//P19,P20 Function4 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_THIRD3) & (~0x00000006), LS1X_CBUS_THIRD3);//P97,P98 Function3 disable
+
+
+	/* P0-P5 Function1-3 disable */
+	__raw_writel(__raw_readl(LS1X_CBUS_FIRST0) & (~0x0000003f), LS1X_CBUS_FIRST0);//P0,P1,P2,P3,P4,P5 Function1 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_SECOND0) & (~0x0000003f), LS1X_CBUS_SECOND0);//P0,P1,P2,P3,P4,P5 Function2 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_THIRD0) & (~0x0000003f), LS1X_CBUS_THIRD0); //P0,P1,P2,P3,P4,P5 Function3 disable
+
+	/* UART0 P74-RX0,P75-TX0 */ 
+	__raw_writel(__raw_readl(LS1X_CBUS_THIRD0) & (~0x01800000), LS1X_CBUS_THIRD0);//P23,P24 Function3 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_THIRD3) & (~0x00000018), LS1X_CBUS_THIRD3);//P99,P100 Function3 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_FIRST2) & (~0x00003000), LS1X_CBUS_FIRST2);//P76,P77 Function1 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_SECOND2) | 0x00000C00, LS1X_CBUS_SECOND2);//P74,P75 Function2 enable
+
+	
+	/* UART1 P2-RX1 P3-TX1 */ 
+	__raw_writel(__raw_readl(LS1X_CBUS_FIRST0) & (~0x00060000), LS1X_CBUS_FIRST0); //P17,P18 Function1 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_FIRST3) & (~0x00000060), LS1X_CBUS_FIRST3); //P101,P102 Function1 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_SECOND1) & (~0x00000300), LS1X_CBUS_SECOND1);//P40,P41 Function2 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_SECOND2) & (~0x00003000), LS1X_CBUS_SECOND2); //P76,P77 Function2 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT0) | 0x0000000c, LS1X_CBUS_FOURTHT0);//P2-RX1,P3-TX1  Function4 enable
+
+	/* UART2  P35-RX2 P36-TX2 */
+	__raw_writel(__raw_readl(LS1X_CBUS_SECOND1) & (~0x00000030), LS1X_CBUS_SECOND1);//P42,P43 Function2 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_THIRD0) & (~0x18000000), LS1X_CBUS_THIRD0);  //P27,P28 Function3 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_THIRD3) & (~0x00000180), LS1X_CBUS_THIRD3);  //P103,P104 Function3 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_FIRST1) & (~0x00000030), LS1X_CBUS_FIRST1);//P36,P37 Function1 disable
+//	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT0) | 0x00000030, LS1X_CBUS_FOURTHT0); //P4-RX0,P5-TX0 Function4 enable 
+//	__raw_writel(__raw_readl(LS1X_CBUS_SECOND0) | 0x00000030, LS1X_CBUS_SECOND0); //P4-PWM0, P4=PWM1 Function2 enable
+	__raw_writel(__raw_readl(LS1X_CBUS_SECOND1) | 0x00000030, LS1X_CBUS_SECOND1);//P36-RX2,P37-TX2 Function2 , this is pmon uart port 
+	
+
+	/* UART3 P0-RX3 P1-TX3 */
+	__raw_writel(__raw_readl(LS1X_CBUS_SECOND0) & (~0x00060000), LS1X_CBUS_SECOND0); //P17,P18 Function2 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_SECOND1) & (~0x00003006), LS1X_CBUS_SECOND1); //P33,P34,P44,P45 Function2 disable
+	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT0) | 0x00000003, LS1X_CBUS_FOURTHT0); //P0-RX3,P1-TX3 Function4 enable
+#endif //CONFIG_LS1C_OPENLOONGSON_V2_BOARD
 
 	ls1x_serial_setup(&ls1x_uart_pdev);
 #ifdef CONFIG_LS1X_FB0
