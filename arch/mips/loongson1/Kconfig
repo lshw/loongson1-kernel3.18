@@ -83,6 +83,17 @@ config LS1C_CBV0B_BOARD
 config LS1C_OPENLOONGSON_ROBOT_BOARD
 	bool "openloongson robot ctrl board (ls1c300a)"
 	select LOONGSON1_LS1C300A
+
+config LS1C_OPENLOONGSON_V2_BOARD
+	bool "openloongson v2.0 board (ls1c300a)"
+	select LOONGSON1_LS1C300A
+	help
+	  mtd0:kernel 14M,mtd1:root 100M,mtd2:data 14M.
+
+	  uart0 rx:p74,tx:p75
+	  uart1 rx:p2,tx:p3
+	  uart2 rx:p35,tx:p36
+	  uart3 rx:p0,tx:p1
 endchoice
 
 config LOONGSON1_LS1C300A

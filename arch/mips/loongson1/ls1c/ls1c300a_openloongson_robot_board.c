@@ -33,6 +33,22 @@ struct pwm_device ls1x_pwm_list[] = {
 #ifdef CONFIG_MTD_NAND_LS1X
 #include <ls1x_nand.h>
 static struct mtd_partition ls1x_nand_partitions[] = {
+#ifdef CONFIG_LS1C_OPENLOONGSON_V2_BOARD
+	{
+		.name	= "kernel",
+		.offset	= MTDPART_OFS_APPEND,
+		.size	= 14*1024*1024,
+	},  {
+		.name	= "rootfs",
+		.offset	= MTDPART_OFS_APPEND,
+		.size	= 100*1024*1024,
+	},  {
+		.name	= "mini_rootfs",
+		.offset	= MTDPART_OFS_APPEND,
+		.size	= MTDPART_SIZ_FULL,
+	},
+
+#else
 	{
 		.name	= "bootloader",
 		.offset	= MTDPART_OFS_APPEND,
@@ -50,6 +66,7 @@ static struct mtd_partition ls1x_nand_partitions[] = {
 		.offset	= MTDPART_OFS_APPEND,
 		.size	= MTDPART_SIZ_FULL,
 	},
+#endif
 };
 
 struct ls1x_nand_platform_data ls1x_nand_parts = {
