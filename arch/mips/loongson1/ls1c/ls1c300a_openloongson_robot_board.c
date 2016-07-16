@@ -16,7 +16,10 @@
 #include <platform.h>
 #include <loongson1.h>
 #include <irq.h>
+#include <linux/phy.h>
+#include <linux/stmmac.h>
 
+#include <asm-generic/sizes.h>
 #if 0
 //#if defined(CONFIG_PWM_LS1X)
 struct pwm_device ls1x_pwm_list[] = {
@@ -279,7 +282,6 @@ static struct platform_device *ls1c_platform_devices[] __initdata = {
 #endif
 #if defined(CONFIG_LS1X_GMAC0)
 	&ls1x_eth0_pdev,
-	&ls1x_gmac0_phy,
 #endif
 #ifdef CONFIG_USB_OHCI_HCD_PLATFORM
 	&ls1x_ohci_pdev,
