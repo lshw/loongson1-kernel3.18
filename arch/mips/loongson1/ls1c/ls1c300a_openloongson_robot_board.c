@@ -30,6 +30,58 @@ struct pwm_device ls1x_pwm_list[] = {
 };
 #endif
 
+#define CBUS_MUX(func, r) \
+                ((void __iomem *)0xbfd011c0 + ((func -1) * 0x10) + (4*r))
+#define CBUSS(func, r) \
+                0x11c0 + ((func -1) * 0x10) + (4*r)
+void gpio_disp(void) {
+#ifdef CONFIG_LS1X_CBUS_DUMP
+char buff[500];
+int16_t i,m;
+printk(KERN_ERR "fun:  ==SHUT_CTRL=[%08x]=============\n",__raw_readl(LS1X_MUX_CTRL0));
+printk(KERN_ERR "fun:  11111110 00000000 00000000 00000000\n");
+printk(KERN_ERR "fun:  22110009 98887766 65544433 22211000\n");
+printk(KERN_ERR "fun:  40628406 28406284 06284062 84062840\n");
+
+for(i=0;i<5;i++) {
+sprintf(buff,"fun%d:",i+1);
+for(m=12;m>=0;m=m-4) {
+sprintf(buff,"%s %08x",buff,__raw_readl((void __iomem *)0xbfd011c0+i*0x10+m));
+}
+printk(KERN_ERR "%s\n",buff);
+
+}
+#endif// CONFIG_LS1X_CBUS_DUMP
+}
+void gpio_func(uint8_t func,uint8_t gpio_no) {
+	uint8_t i,regno,regbit;
+        uint32_t data=0;
+	regno=(uint8_t) gpio_no/32;
+	regbit=gpio_no % 32;
+gpio_disp();
+data=__raw_readl(CBUS_MUX(func,regno));
+	for(i=1;i<6;i++){
+		if(i<func)
+			__raw_writel(__raw_readl(CBUS_MUX(i,regno)) & ~(1<<regbit),CBUS_MUX(i,regno));
+		else {
+			__raw_writel(__raw_readl(CBUS_MUX(i,regno)) | (1<<regbit),CBUS_MUX(i,regno));
+			break;
+		}
+	}
+		printk(KERN_ERR "set gpio%d,fun%d,addr=[0xbfd0%x] %08x | %08x = %08x\n", gpio_no,func,CBUSS(func,regno),data,1<<regbit,__raw_readl(CBUS_MUX(func,regno)));
+gpio_disp();
+}
+
+void gpio_func_dis(uint8_t func,uint8_t gpio_no) {
+	uint8_t regno,regbit;
+	regno=(uint8_t) gpio_no/32;
+	regbit=gpio_no % 32;
+	__raw_writel(__raw_readl(CBUS_MUX(func,regno)) & ~(1<<regbit),CBUS_MUX(func,regno));
+	printk(KERN_ERR "disable gpio%d,fun%d\n", gpio_no,func);
+
+}
+
+
 #ifdef CONFIG_MTD_NAND_LS1X
 #include <ls1x_nand.h>
 static struct mtd_partition ls1x_nand_partitions[] = {
