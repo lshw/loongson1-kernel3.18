@@ -105,6 +105,9 @@ endif
 
 endchoice
 
+config LS1X_CBUS_DUMP
+	bool "CBUS_REGS_DUMP"
+	depends on LOONGSON1_LS1C
 
 
 config PWM_LS1X
