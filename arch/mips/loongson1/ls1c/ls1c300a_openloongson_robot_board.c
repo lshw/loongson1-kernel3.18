@@ -34,19 +34,17 @@ struct pwm_device ls1x_pwm_list[] = {
                 ((void __iomem *)0xbfd011c0 + ((func -1) * 0x10) + (4*r))
 #define CBUSS(func, r) \
                 0x11c0 + ((func -1) * 0x10) + (4*r)
-void gpio_disp(void) {
+void cbus_dump(void) {
 #ifdef CONFIG_LS1X_CBUS_DUMP
 char buff[500];
 int16_t i,m;
-printk(KERN_ERR "fun:  ==SHUT_CTRL=[%08x]=============\n",__raw_readl(LS1X_MUX_CTRL0));
-printk(KERN_ERR "fun:  11111110 00000000 00000000 00000000\n");
-printk(KERN_ERR "fun:  22110009 98887766 65544433 22211000\n");
-printk(KERN_ERR "fun:  40628406 28406284 06284062 84062840\n");
+printk(KERN_ERR "gpio  ==SHUT_CTRL=[%08x]=============\n",__raw_readl(LS1X_MUX_CTRL0));
+printk(KERN_ERR "gpio  00 08 16 24 32 40 48 56 64 72 80 88 92 00 08 16 24\n");
 
 for(i=0;i<5;i++) {
 sprintf(buff,"fun%d:",i+1);
-for(m=12;m>=0;m=m-4) {
-sprintf(buff,"%s %08x",buff,__raw_readl((void __iomem *)0xbfd011c0+i*0x10+m));
+for(m=0;m<0x10;m++) {
+sprintf(buff,"%s %02x",buff,__raw_readb((void __iomem *)0xbfd011c0+i*0x10+m));
 }
 printk(KERN_ERR "%s\n",buff);
 
@@ -55,11 +53,11 @@ printk(KERN_ERR "%s\n",buff);
 }
 void gpio_func(uint8_t func,uint8_t gpio_no) {
 	uint8_t i,regno,regbit;
-        uint32_t data=0;
+	uint32_t data=0;
 	regno=(uint8_t) gpio_no/32;
 	regbit=gpio_no % 32;
-gpio_disp();
-data=__raw_readl(CBUS_MUX(func,regno));
+	//cbus_dump();
+	data=__raw_readl(CBUS_MUX(func,regno));
 	for(i=1;i<6;i++){
 		if(i<func)
 			__raw_writel(__raw_readl(CBUS_MUX(i,regno)) & ~(1<<regbit),CBUS_MUX(i,regno));
@@ -68,8 +66,8 @@ data=__raw_readl(CBUS_MUX(func,regno));
 			break;
 		}
 	}
-		printk(KERN_ERR "set gpio%d,fun%d,addr=[0xbfd0%x] %08x | %08x = %08x\n", gpio_no,func,CBUSS(func,regno),data,1<<regbit,__raw_readl(CBUS_MUX(func,regno)));
-gpio_disp();
+	printk(KERN_ERR "set gpio%d,fun%d,addr=[0xbfd0%x] %08x | %08x = %08x\n", gpio_no,func,CBUSS(func,regno),data,1<<regbit,__raw_readl(CBUS_MUX(func,regno)));
+	//cbus_dump();
 }
 
 void gpio_func_dis(uint8_t func,uint8_t gpio_no) {
@@ -257,7 +255,7 @@ static void ls1x_i2c_setup(void)
 	/* 使能I2C控制器 */
 	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) & (~I2C0_SHUT), LS1X_MUX_CTRL0);
 	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) & (~I2C1_SHUT), LS1X_MUX_CTRL0);
-//	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) & (~I2C2_SHUT), LS1X_MUX_CTRL0);
+	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) & (~I2C2_SHUT), LS1X_MUX_CTRL0);
 
 	/*
 	 * PIN74    GPIO85    I2C_SDA0
@@ -266,11 +264,12 @@ static void ls1x_i2c_setup(void)
 	 * PIN3    GPIO76    I2C_SDA1
 	 * PIN6    GPIO77    I2C_SCL1
 	 */
-	__raw_writel(__raw_readl(LS1X_CBUS_FIRST2)   & 0xFFCFCFFF, LS1X_CBUS_FIRST2);  //P86,P85,P78,P77 Function1 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_SECOND2)  & 0xFFCFCFFF, LS1X_CBUS_SECOND2); //P86,P85,P78,P77 Function2 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_THIRD2)   & 0xFFCFCFFF, LS1X_CBUS_THIRD2);  //P86,P85,P78,P77 Function3 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT2) | 0x00303000, LS1X_CBUS_FOURTHT2);//P86,P85,P78,P77 Function4 enable
-	__raw_writel(__raw_readl(LS1X_CBUS_FIFTHT2)  & 0xFFCFCFFF, LS1X_CBUS_FIFTHT2); //P86,P85,P78,P77 Function5 disable
+	gpio_func(4,85);//sda0
+	gpio_func(4,86);//scl0
+	gpio_func(4,77);//scl1
+	gpio_func(4,76);//sda1
+	gpio_func(4,50);//sda2
+	gpio_func(4,51);//scl2
 }
 #endif
 
@@ -415,48 +414,27 @@ static int __init ls1c_platform_init(void)
 {
 	int err;
 #ifdef CONFIG_LS1C_OPENLOONGSON_V2_BOARD
-	//__raw_writel(0,LS1X_CBUS_FIFTHT0);//disable p0-p31 Function5 disable
-	//__raw_writel(0,LS1X_CBUS_FIFTHT1);//disable p31-p63 Function5 disable
-	//__raw_writel(0,LS1X_CBUS_FIFTHT2);//disable p63-p95 Function5 disable
-	//__raw_writel(0,LS1X_CBUS_FIFTHT3);//disable p96-p127 Function5 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT1) & (~0x030C3000), LS1X_CBUS_FOURTHT1);//P44,P45,P50,P51,P56,P57 Function4 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT0) & (~0x00780000), LS1X_CBUS_FOURTHT0);//P19,P20 Function4 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_THIRD3) & (~0x00000006), LS1X_CBUS_THIRD3);//P97,P98 Function3 disable
-
+	__raw_writel(0,LS1X_CBUS_FIFTHT0);//disable p0-p31 Function5 disable
+	__raw_writel(0,LS1X_CBUS_FIFTHT1);//disable p31-p63 Function5 disable
+	__raw_writel(0,LS1X_CBUS_FIFTHT2);//disable p63-p95 Function5 disable
+	__raw_writel(0,LS1X_CBUS_FIFTHT3);//disable p96-p127 Function5 disable
 
 	/* P0-P5 Function1-3 disable */
 	__raw_writel(__raw_readl(LS1X_CBUS_FIRST0) & (~0x0000003f), LS1X_CBUS_FIRST0);//P0,P1,P2,P3,P4,P5 Function1 disable
 	__raw_writel(__raw_readl(LS1X_CBUS_SECOND0) & (~0x0000003f), LS1X_CBUS_SECOND0);//P0,P1,P2,P3,P4,P5 Function2 disable
 	__raw_writel(__raw_readl(LS1X_CBUS_THIRD0) & (~0x0000003f), LS1X_CBUS_THIRD0); //P0,P1,P2,P3,P4,P5 Function3 disable
 
-	/* UART0 P74-RX0,P75-TX0 */ 
-	__raw_writel(__raw_readl(LS1X_CBUS_THIRD0) & (~0x01800000), LS1X_CBUS_THIRD0);//P23,P24 Function3 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_THIRD3) & (~0x00000018), LS1X_CBUS_THIRD3);//P99,P100 Function3 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_FIRST2) & (~0x00003000), LS1X_CBUS_FIRST2);//P76,P77 Function1 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_SECOND2) | 0x00000C00, LS1X_CBUS_SECOND2);//P74,P75 Function2 enable
+	gpio_func(2,74);//rx0
+	gpio_func(2,75);//tx0
+	gpio_func(4,2);//rx1
+	gpio_func(4,3);//tx1
+//	gpio_func(4,4);//rx2
+//	gpio_func(4,5);//tx2
+	gpio_func(2,36);//rx2 console
+	gpio_func(2,37);//tx2 console
+	gpio_func(4,0);//rx3
+	gpio_func(4,1);//tx3
 
-	
-	/* UART1 P2-RX1 P3-TX1 */ 
-	__raw_writel(__raw_readl(LS1X_CBUS_FIRST0) & (~0x00060000), LS1X_CBUS_FIRST0); //P17,P18 Function1 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_FIRST3) & (~0x00000060), LS1X_CBUS_FIRST3); //P101,P102 Function1 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_SECOND1) & (~0x00000300), LS1X_CBUS_SECOND1);//P40,P41 Function2 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_SECOND2) & (~0x00003000), LS1X_CBUS_SECOND2); //P76,P77 Function2 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT0) | 0x0000000c, LS1X_CBUS_FOURTHT0);//P2-RX1,P3-TX1  Function4 enable
-
-	/* UART2  P35-RX2 P36-TX2 */
-	__raw_writel(__raw_readl(LS1X_CBUS_SECOND1) & (~0x00000030), LS1X_CBUS_SECOND1);//P42,P43 Function2 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_THIRD0) & (~0x18000000), LS1X_CBUS_THIRD0);  //P27,P28 Function3 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_THIRD3) & (~0x00000180), LS1X_CBUS_THIRD3);  //P103,P104 Function3 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_FIRST1) & (~0x00000030), LS1X_CBUS_FIRST1);//P36,P37 Function1 disable
-//	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT0) | 0x00000030, LS1X_CBUS_FOURTHT0); //P4-RX0,P5-TX0 Function4 enable 
-//	__raw_writel(__raw_readl(LS1X_CBUS_SECOND0) | 0x00000030, LS1X_CBUS_SECOND0); //P4-PWM0, P4=PWM1 Function2 enable
-	__raw_writel(__raw_readl(LS1X_CBUS_SECOND1) | 0x00000030, LS1X_CBUS_SECOND1);//P36-RX2,P37-TX2 Function2 , this is pmon uart port 
-	
-
-	/* UART3 P0-RX3 P1-TX3 */
-	__raw_writel(__raw_readl(LS1X_CBUS_SECOND0) & (~0x00060000), LS1X_CBUS_SECOND0); //P17,P18 Function2 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_SECOND1) & (~0x00003006), LS1X_CBUS_SECOND1); //P33,P34,P44,P45 Function2 disable
-	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT0) | 0x00000003, LS1X_CBUS_FOURTHT0); //P0-RX3,P1-TX3 Function4 enable
 #endif //CONFIG_LS1C_OPENLOONGSON_V2_BOARD
 
 	ls1x_serial_setup(&ls1x_uart_pdev);
@@ -513,8 +491,8 @@ static int __init ls1c_platform_init(void)
 
 #endif
 #if defined(CONFIG_PWM_LS1X_PWM2) || defined(CONFIG_PWM_LS1X_PWM3)
-	__raw_writel(__raw_readl(LS1X_CBUS_FIRST1) & (~0x00300000), LS1X_CBUS_FIRST1);
-	__raw_writel(__raw_readl(LS1X_CBUS_SECOND1) & (~0x00300000), LS1X_CBUS_SECOND1);
+	__raw_writel(__raw_readl(LS1X_CBUS_FIRST1) & (~0x00300000), LS1X_CBUS_FIRST1); //52,53 fun4 pwm
+	__raw_writel(__raw_readl(LS1X_CBUS_SECOND1) & (~0x00300000), LS1X_CBUS_SECOND1); 
 	__raw_writel(__raw_readl(LS1X_CBUS_THIRD1) & (~0x00300000), LS1X_CBUS_THIRD1);
 	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT1) | 0x00300000, LS1X_CBUS_FOURTHT1);
 	__raw_writel(__raw_readl(LS1X_CBUS_FIFTHT1) & (~0x00300000), LS1X_CBUS_THIRD1);
