@@ -240,7 +240,7 @@ LEAF(_init_fpu)
 	mtc1	t1, $f30
 	mtc1	t1, $f31
 
-#ifdef CONFIG_CPU_MIPS32_R2
+#if defined(CONFIG_CPU_MIPS32_R2) && !defined(CONFIG_CPU_LOONGSON1)
 	.set    push
 	.set    mips32r2
 	.set	fp=64
@@ -280,7 +280,7 @@ LEAF(_init_fpu)
 	mthc1   t1, $f30
 	mthc1   t1, $f31
 1:	.set    pop
-#endif /* CONFIG_CPU_MIPS32_R2 */
+#endif /* defined(CONFIG_CPU_MIPS32_R2) && !defined(CONFIG_CPU_LOONGSON1) */
 #else
 	.set	arch=r4000
 	dmtc1	t1, $f0
