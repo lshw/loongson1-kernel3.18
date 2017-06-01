@@ -24,7 +24,15 @@ static inline void arch_local_irq_disable(void)
 	__asm__ __volatile__(
 	"	.set	push						\n"
 	"	.set	noat						\n"
+#ifdef CONFIG_CPU_LOONGSON1
+	"	mfc0	$1,$12						\n"
+	"	ori	$1,0x1f						\n"
+	"	xori	$1,0x1f						\n"
+	"	.set	noreorder					\n"
+	"	mtc0	$1,$12						\n"
+#else
 	"	di							\n"
+#endif
 	"	" __stringify(__irq_disable_hazard) "			\n"
 	"	.set	pop						\n"
 	: /* no outputs */
