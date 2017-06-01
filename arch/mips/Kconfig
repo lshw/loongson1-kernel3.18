@@ -302,7 +302,6 @@ config MACH_LOONGSON1
 	bool "Loongson 1 family of machines"
 	select CPU_LOONGSON1
 	select SYS_HAS_CPU_MIPS32_R1
-	select SYS_HAS_CPU_MIPS32_R2
 	select SYS_SUPPORTS_ZBOOT
 	select ARCH_REQUIRE_GPIOLIB
 	help
