@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/mips 3.18.0 Kernel Configuration
+# Linux/mips 3.18.72 Kernel Configuration
 #
 CONFIG_MIPS=y
 
@@ -54,6 +54,7 @@ CONFIG_LOONGSON1_LS1B=y
 CONFIG_LS1B_DEV_BOARD=y
 # CONFIG_LS1B_CORE_BOARD is not set
 # CONFIG_LOONGSON1_LS1C is not set
+# CONFIG_PWM_LS1X is not set
 CONFIG_RWSEM_GENERIC_SPINLOCK=y
 # CONFIG_ARCH_HAS_ILOG2_U32 is not set
 # CONFIG_ARCH_HAS_ILOG2_U64 is not set
@@ -459,7 +460,6 @@ CONFIG_HAVE_NET_DSA=y
 # CONFIG_BATMAN_ADV is not set
 # CONFIG_OPENVSWITCH is not set
 # CONFIG_VSOCKETS is not set
-# CONFIG_NETLINK_MMAP is not set
 # CONFIG_NETLINK_DIAG is not set
 # CONFIG_NET_MPLS_GSO is not set
 # CONFIG_HSR is not set

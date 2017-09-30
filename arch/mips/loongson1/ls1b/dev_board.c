@@ -20,16 +20,16 @@
 static struct mtd_partition ls1x_nand_partitions[] = {
 	{
 		.name	= "kernel",
-		.offset	= MTDPART_OFS_APPEND,
-		.size	= 14*1024*1024,
-	}, {
+		.offset	= 2*1024*1024,
+		.size	= 20*1024*1024,
+	},  {
 		.name	= "rootfs",
-		.offset	= MTDPART_OFS_APPEND,
-		.size	= 100*1024*1024,
-	}, {
-		.name	= "data",
-		.offset	= MTDPART_OFS_APPEND,
-		.size	= MTDPART_SIZ_FULL,
+		.offset	= 22*1024*1024,
+		.size	= 106*1024*1024,
+	},  {
+		.name	= "pmon(nand)",
+		.offset	= 0,
+		.size	= 2*1024*1024,
 	},
 };
 
