@@ -5,4 +5,4 @@
 obj-$(CONFIG_LS1C_CBII_V0A_BOARD) += ls1c300b_cbiiv0a_board.o
 obj-$(CONFIG_LS1C_CBV0B_BOARD) += ls1c300a_cbv0b_board.o
 obj-$(CONFIG_LS1C_OPENLOONGSON_ROBOT_BOARD) += ls1c300a_openloongson_robot_board.o
-obj-$(CONFIG_LS1C_OPENLOONGSON_V2_BOARD) += ls1c300a_openloongson_robot_board.o
+obj-$(CONFIG_LS1C_OPENLOONGSON_BOARD) += ls1c300a_openloongson_robot_board.o
