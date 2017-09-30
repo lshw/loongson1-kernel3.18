@@ -413,7 +413,7 @@ static struct platform_device *ls1c_platform_devices[] __initdata = {
 static int __init ls1c_platform_init(void)
 {
 	int err;
-#ifdef CONFIG_LS1C_OPENLOONGSON_V2_BOARD
+#ifdef CONFIG_LS1C_OPENLOONGSON_BOARD
 	__raw_writel(0,LS1X_CBUS_FIFTHT0);//disable p0-p31 Function5 disable
 	__raw_writel(0,LS1X_CBUS_FIFTHT1);//disable p31-p63 Function5 disable
 	__raw_writel(0,LS1X_CBUS_FIFTHT2);//disable p63-p95 Function5 disable
@@ -435,7 +435,7 @@ static int __init ls1c_platform_init(void)
 	gpio_func(4,0);//rx3
 	gpio_func(4,1);//tx3
 
-#endif //CONFIG_LS1C_OPENLOONGSON_V2_BOARD
+#endif //CONFIG_LS1C_OPENLOONGSON_BOARD
 
 	ls1x_serial_setup(&ls1x_uart_pdev);
 #ifdef CONFIG_LS1X_FB0
