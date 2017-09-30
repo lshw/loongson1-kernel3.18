@@ -133,6 +133,7 @@ get_endpoints(struct usbtest_dev *dev, struct usb_interface *intf)
 			case USB_ENDPOINT_XFER_INT:
 				if (dev->info->intr)
 					goto try_intr;
+				continue;
 			case USB_ENDPOINT_XFER_ISOC:
 				if (dev->info->iso)
 					goto try_iso;
@@ -545,7 +546,6 @@ static void sg_timeout(unsigned long _req)
 {
 	struct usb_sg_request	*req = (struct usb_sg_request *) _req;
 
-	req->status = -ETIMEDOUT;
 	usb_sg_cancel(req);
 }
 
@@ -576,8 +576,10 @@ static int perform_sglist(
 		mod_timer(&sg_timer, jiffies +
 				msecs_to_jiffies(SIMPLE_IO_TIMEOUT));
 		usb_sg_wait(req);
-		del_timer_sync(&sg_timer);
-		retval = req->status;
+		if (!del_timer_sync(&sg_timer))
+			retval = -ETIMEDOUT;
+		else
+			retval = req->status;
 
 		/* FIXME check resulting data pattern */
 
