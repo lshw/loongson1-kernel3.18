@@ -148,7 +148,7 @@ static struct flash_platform_data ls1x_spi_flash_data = {
 #include <linux/spi/mmc_spi.h>
 #include <linux/mmc/host.h>
 /* 开发板使用GPIO6引脚作为MMC/SD卡的插拔探测引脚 */
-#define DETECT_GPIO  6
+#define DETECT_GPIO  56
 //static int mmc_spi_get_cd(struct device *dev)
 //{
 //	return !gpio_get_value(DETECT_GPIO);
