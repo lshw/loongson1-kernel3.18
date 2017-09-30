@@ -132,6 +132,8 @@ static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(0x10C4, 0x8977) },	/* CEL MeshWorks DevKit Device */
 	{ USB_DEVICE(0x10C4, 0x8998) }, /* KCF Technologies PRN */
 	{ USB_DEVICE(0x10C4, 0x8A2A) }, /* HubZ dual ZigBee and Z-Wave dongle */
+	{ USB_DEVICE(0x10C4, 0x8A5E) }, /* CEL EM3588 ZigBee USB Stick Long Range */
+	{ USB_DEVICE(0x10C4, 0x8B34) }, /* Qivicon ZigBee USB Radio Stick */
 	{ USB_DEVICE(0x10C4, 0xEA60) }, /* Silicon Labs factory default */
 	{ USB_DEVICE(0x10C4, 0xEA61) }, /* Silicon Labs factory default */
 	{ USB_DEVICE(0x10C4, 0xEA70) }, /* Silicon Labs factory default */
@@ -845,7 +847,9 @@ static int cp210x_tiocmget(struct tty_struct *tty)
 	unsigned int control;
 	int result;
 
-	cp210x_get_config(port, CP210X_GET_MDMSTS, &control, 1);
+	result = cp210x_get_config(port, CP210X_GET_MDMSTS, &control, 1);
+	if (result)
+		return result;
 
 	result = ((control & CONTROL_DTR) ? TIOCM_DTR : 0)
 		|((control & CONTROL_RTS) ? TIOCM_RTS : 0)
