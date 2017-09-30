@@ -83,19 +83,19 @@ void gpio_func_dis(uint8_t func,uint8_t gpio_no) {
 #ifdef CONFIG_MTD_NAND_LS1X
 #include <ls1x_nand.h>
 static struct mtd_partition ls1x_nand_partitions[] = {
-#ifdef CONFIG_LS1C_OPENLOONGSON_V2_BOARD
+#ifdef CONFIG_LS1C_OPENLOONGSON_BOARD
 	{
 		.name	= "kernel",
-		.offset	= MTDPART_OFS_APPEND,
-		.size	= 14*1024*1024,
+		.offset	= 2*1024*1024,
+		.size	= 20*1024*1024,
 	},  {
 		.name	= "rootfs",
-		.offset	= MTDPART_OFS_APPEND,
-		.size	= 100*1024*1024,
+		.offset	= 22*1024*1024,
+		.size	= 106*1024*1024,
 	},  {
-		.name	= "mini_rootfs",
-		.offset	= MTDPART_OFS_APPEND,
-		.size	= MTDPART_SIZ_FULL,
+		.name	= "pmon(nand)",
+		.offset	= 0,
+		.size	= 2*1024*1024,
 	},
 
 #else
@@ -357,7 +357,7 @@ static struct platform_device *ls1c_platform_devices[] __initdata = {
 #ifdef CONFIG_USB_EHCI_HCD_PLATFORM
 	&ls1x_ehci_pdev,
 #endif
-#ifdef CONFIG_RTC_DRV_TOY_LOONGSON1
+#ifdef CONFIG_RTC_DRV_TOY_LOONGSON1CV2
 	&ls1x_toy_pdev,
 #endif
 #ifdef CONFIG_LS1X_WDT

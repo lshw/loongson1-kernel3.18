@@ -84,11 +84,11 @@ config LS1C_OPENLOONGSON_ROBOT_BOARD
 	bool "openloongson robot ctrl board (ls1c300a)"
 	select LOONGSON1_LS1C300A
 
-config LS1C_OPENLOONGSON_V2_BOARD
-	bool "openloongson v2.0 board (ls1c300a)"
+config LS1C_OPENLOONGSON_BOARD
+	bool "openloongson board (ls1c300)"
 	select LOONGSON1_LS1C300A
 	help
-	  mtd0:kernel 14M,mtd1:root 100M,mtd2:data 14M.
+	  mtd0:kernel start 2M,size 20M;mtd1:root start 22M,size106M,mtd2:bootloader start 0,size 2M.
 
 	  uart0 rx:p74,tx:p75
 	  uart1 rx:p2,tx:p3
