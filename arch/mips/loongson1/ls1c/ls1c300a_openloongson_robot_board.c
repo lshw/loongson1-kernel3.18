@@ -233,13 +233,13 @@ static struct i2c_board_info ls1x_i2c2_board_info[] = {
 #ifdef CONFIG_I2C_LS1X
 #include <linux/i2c-ls1x.h>
 struct ls1x_i2c_platform_data ls1x_i2c0_data = {
-	.bus_clock_hz = 1000000, /* i2c bus clock in Hz */
+	.bus_clock_hz = 100000, /* i2c bus clock in Hz */
 	.devices	= ls1x_i2c0_board_info, /* optional table of devices */
 	.num_devices	= ARRAY_SIZE(ls1x_i2c0_board_info), /* table size */
 };
 
 struct ls1x_i2c_platform_data ls1x_i2c1_data = {
-	.bus_clock_hz = 1000000, /* i2c bus clock in Hz */
+	.bus_clock_hz = 100000, /* i2c bus clock in Hz */
 	.devices	= ls1x_i2c1_board_info, /* optional table of devices */
 	.num_devices	= ARRAY_SIZE(ls1x_i2c1_board_info), /* table size */
 };
@@ -264,10 +264,6 @@ static void ls1x_i2c_setup(void)
 	 * PIN3    GPIO76    I2C_SDA1
 	 * PIN6    GPIO77    I2C_SCL1
 	 */
-	gpio_func(4,85);//sda0
-	gpio_func(4,86);//scl0
-	gpio_func(4,77);//scl1
-	gpio_func(4,76);//sda1
 	gpio_func(4,50);//sda2
 	gpio_func(4,51);//scl2
 }
