@@ -626,9 +626,9 @@ static int ls1x_nand_probe(struct platform_device *pdev)
 	}
 
 	mtd->name = "ls1x-nand";
-
+static const char * const part_probes[] = { "cmdlinepart", NULL };
 	if (pdata->parts) {
-		ret = mtd_device_parse_register(info->mtd, NULL, NULL,
+		ret = mtd_device_parse_register(info->mtd, part_probes, NULL,
 					pdata->parts, pdata->nr_parts);
 		return 0;
 	}
