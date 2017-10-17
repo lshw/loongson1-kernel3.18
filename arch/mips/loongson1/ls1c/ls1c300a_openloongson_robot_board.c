@@ -36,19 +36,43 @@ struct pwm_device ls1x_pwm_list[] = {
                 0x11c0 + ((func -1) * 0x10) + (4*r)
 void cbus_dump(void) {
 #ifdef CONFIG_LS1X_CBUS_DUMP
-char buff[500];
-int16_t i,m;
-printk(KERN_ERR "gpio  ==SHUT_CTRL=[%08x]=============\n",__raw_readl(LS1X_MUX_CTRL0));
-printk(KERN_ERR "gpio  00 08 16 24 32 40 48 56 64 72 80 88 92 00 08 16 24\n");
+	int16_t i;
+	char buff[500];
+	printk(KERN_ERR "gpio  ==SHUT_CTRL=[%08x]==uart0fu=[%08x]==uart8fu=[%08x]=========\n",__raw_readl(LS1X_MUX_CTRL0),__raw_readl((void __iomem *)0xbfd00420),__raw_readl((void __iomem *)0xbfe4c904));
+	printk(KERN_ERR "gpio  31-----0 63----32 95----64 127---96\n");
 
-for(i=0;i<5;i++) {
-sprintf(buff,"fun%d:",i+1);
-for(m=0;m<0x10;m++) {
-sprintf(buff,"%s %02x",buff,__raw_readb((void __iomem *)0xbfd011c0+i*0x10+m));
+	for(i=0;i<5;i++) {
+		printk(KERN_ERR "fun%d: %08x %08x %08x %08x\n",i+1,
+__raw_readl((void __iomem *)0xbfd011c0+i*0x10),
+__raw_readl((void __iomem *)0xbfd011c0+i*0x10+4),
+__raw_readl((void __iomem *)0xbfd011c0+i*0x10+8),
+__raw_readl((void __iomem *)0xbfd011c0+i*0x10+0xc));
+		//printk(KERN_ERR buff);
+	}
+for(i=0;i<128;i++) {
+sprintf(buff,"gpio%d:fun",i);
+if(__raw_readl((void __iomem *)0xbfd011c0+(i/32)*4) & (1<<(i%32))) {
+printk(KERN_ERR "%s1\n",buff);
+continue;
 }
-printk(KERN_ERR "%s\n",buff);
+if(__raw_readl((void __iomem *)0xbfd011d0+(i/32)*4) & (1<<(i%32))) {
+printk(KERN_ERR "%s2\n",buff);
+continue;
+}
+if(__raw_readl((void __iomem *)0xbfd011e0+(i/32)*4) & (1<<(i%32))) {
+printk(KERN_ERR "%s3\n",buff);
+continue;
+}
+if(__raw_readl((void __iomem *)0xbfd011f0+(i/32)*4) & (1<<(i%32))) {
+printk(KERN_ERR "%s4\n",buff);
+continue;
+}
+if(__raw_readl((void __iomem *)0xbfd01200+(i/32)*4) & (1<<(i%32))) {
+printk(KERN_ERR "%s5\n",buff);
+continue;
+}
+}
 
-}
 #endif// CONFIG_LS1X_CBUS_DUMP
 }
 void gpio_func(uint8_t func,uint8_t gpio_no) {
