@@ -362,6 +362,92 @@ void ls1x_hwmon_set_platdata(struct ls1x_hwmon_pdata *pd)
 }
 #endif
 
+#if defined(CONFIG_KEYBOARD_GPIO) || defined(CONFIG_KEYBOARD_GPIO_MODULE)
+#include <linux/gpio_keys.h>
+static struct gpio_keys_button ls1x_gpio_keys_buttons[] = {
+	 {
+		.code		= KEY_0,
+		.gpio		= 85,
+		.active_low	= 1,
+		.desc		= "0",
+		.wakeup		= 1,
+		.debounce_interval	= 10, /* debounce ticks interval in msecs */
+	},
+	{
+		.code		= KEY_1,
+		.gpio		= 86,
+		.active_low	= 1,
+		.desc		= "1",
+		.wakeup		= 1,
+		.debounce_interval	= 10, /* debounce ticks interval in msecs */
+	},
+	{
+		.code		= KEY_2,
+		.gpio		= 92,
+		.active_low	= 1,
+		.desc		= "2",
+		.wakeup		= 1,
+		.debounce_interval	= 10, /* debounce ticks interval in msecs */
+	},
+};
+
+
+static struct gpio_keys_platform_data ls1x_gpio_keys_data = {
+	.nbuttons = ARRAY_SIZE(ls1x_gpio_keys_buttons),
+	.buttons = ls1x_gpio_keys_buttons,
+	.rep	= 1,	/* enable input subsystem auto repeat */
+};
+
+static struct platform_device ls1x_gpio_keys = {
+	.name =	"gpio-keys",
+	.id =	-1,
+	.dev = {
+		.platform_data = &ls1x_gpio_keys_data,
+	}
+};
+#endif
+
+#if defined(CONFIG_LEDS_GPIO) || defined(CONFIG_LEDS_GPIO_MODULE)
+#include <linux/leds.h>
+struct gpio_led gpio_leds[] = {
+	{
+		.name			= "ok",
+		.gpio			= 6,
+		.active_low		= 1,
+//		.default_trigger	= "timer", /* 触发方式 */
+		.default_trigger	= NULL,
+		.default_state	= LEDS_GPIO_DEFSTATE_ON,
+	}, {
+		.name			= "led1",
+		.gpio			= 52,
+		.active_low		= 1,
+//		.default_trigger	= "heartbeat", /* 触发方式 */
+		.default_trigger	= NULL,
+		.default_state	= LEDS_GPIO_DEFSTATE_ON,
+	}, {
+		.name			= "led2",
+		.gpio			= 53,
+		.active_low		= 1,
+//		.default_trigger	= "timer",	/* 触发方式 */
+		.default_trigger	= NULL,
+		.default_state	= LEDS_GPIO_DEFSTATE_ON,
+	},
+};
+
+static struct gpio_led_platform_data gpio_led_info = {
+	.leds		= gpio_leds,
+	.num_leds	= ARRAY_SIZE(gpio_leds),
+};
+
+static struct platform_device leds = {
+	.name	= "leds-gpio",
+	.id	= -1,
+	.dev	= {
+		.platform_data	= &gpio_led_info,
+	}
+};
+#endif //#if defined(CONFIG_LEDS_GPIO) || defined(CONFIG_LEDS_GPIO_MODULE)
+
 
 static struct platform_device *ls1c_platform_devices[] __initdata = {
 	&ls1x_uart_pdev,
@@ -427,6 +513,12 @@ static struct platform_device *ls1c_platform_devices[] __initdata = {
 #endif
 #ifdef CONFIG_SENSORS_LS1X
 	&ls1x_hwmon_pdev,
+#endif
+#if defined(CONFIG_KEYBOARD_GPIO) || defined(CONFIG_KEYBOARD_GPIO_MODULE)
+	&ls1x_gpio_keys,
+#endif
+#if defined(CONFIG_LEDS_GPIO) || defined(CONFIG_LEDS_GPIO_MODULE)
+	&leds,
 #endif
 };
 

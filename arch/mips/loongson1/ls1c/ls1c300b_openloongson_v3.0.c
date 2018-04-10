@@ -304,8 +304,8 @@ struct gpio_led gpio_leds[] = {
 //		.default_trigger	= "timer",	/* 触发方式 */
 		.default_trigger	= NULL,
 		.default_state	= LEDS_GPIO_DEFSTATE_ON,
-	}
-}
+	},
+};
 
 static struct gpio_led_platform_data gpio_led_info = {
 	.leds		= gpio_leds,
