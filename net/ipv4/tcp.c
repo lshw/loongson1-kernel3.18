@@ -2182,6 +2182,9 @@ adjudge_to_death:
 			tcp_send_active_reset(sk, GFP_ATOMIC);
 			NET_INC_STATS_BH(sock_net(sk),
 					LINUX_MIB_TCPABORTONMEMORY);
+		} else if (!check_net(sock_net(sk))) {
+			/* Not possible to send reset; just close */
+			tcp_set_state(sk, TCP_CLOSE);
 		}
 	}
 
@@ -2276,6 +2279,12 @@ int tcp_disconnect(struct sock *sk, int flags)
 	sk->sk_rx_dst = NULL;
 
 	WARN_ON(inet->inet_num && !icsk->icsk_bind_hash);
+
+	if (sk->sk_frag.page) {
+		put_page(sk->sk_frag.page);
+		sk->sk_frag.page = NULL;
+		sk->sk_frag.offset = 0;
+	}
 
 	sk->sk_error_report(sk);
 	return err;
@@ -2452,7 +2461,7 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
 	case TCP_REPAIR_QUEUE:
 		if (!tp->repair)
 			err = -EPERM;
-		else if (val < TCP_QUEUES_NR)
+		else if ((unsigned int)val < TCP_QUEUES_NR)
 			tp->repair_queue = val;
 		else
 			err = -EINVAL;
@@ -2584,8 +2593,10 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
 
 #ifdef CONFIG_TCP_MD5SIG
 	case TCP_MD5SIG:
-		/* Read the IP->Key mappings from userspace */
-		err = tp->af_specific->md5_parse(sk, optval, optlen);
+		if ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_LISTEN))
+			err = tp->af_specific->md5_parse(sk, optval, optlen);
+		else
+			err = -EINVAL;
 		break;
 #endif
 	case TCP_USER_TIMEOUT:
