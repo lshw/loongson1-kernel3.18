@@ -553,8 +553,6 @@ static int __init ls1c_platform_init(void)
 #ifdef CONFIG_LS1X_FB0
 	/* 使能LCD控制器 */
 	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) & ~LCD_SHUT, LS1X_MUX_CTRL0);
-#else
-	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) | LCD_SHUT, LS1X_MUX_CTRL0);
 #endif
 #ifdef CONFIG_MTD_NAND_LS1X
 	/* 使能NAND控制器 */
