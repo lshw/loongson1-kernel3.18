@@ -88,7 +88,6 @@ config LS1C_H212_RTU_BOARD
 	bool "H212 RTU 11 uart (ls1c300b)"
 	select LOONGSON1_LS1C300B
 	help
-	  mtd0:kernel start 2M,size 20M;mtd1:root start 22M,size106M,mtd2:bootloader start 0,size 2M.
 
 	  uart0 rx:p74,tx:p75
 	  uart1 rx:p2,tx:p3
