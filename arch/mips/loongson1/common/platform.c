@@ -564,7 +564,6 @@ struct platform_device ls1x_spi1_pdev = {
 
 #if defined(CONFIG_FB_LOONGSON1)
 #include <video/ls1xfb.h>
-#include "video_modes.c"
 #ifdef CONFIG_LS1X_FB0
 static struct resource ls1x_fb0_resource[] = {
 	[0] = {
