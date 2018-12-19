@@ -38,7 +38,7 @@
 #define LS1X_IRQ(n, x)			(LS1X_IRQ_BASE + (n << 5) + (x))
 
 #if defined(CONFIG_LOONGSON1_LS1C)
-#define LS1X_UART0_IRQ			LS1X_IRQ(0, 2)
+#define LS1X_UART0_IRQ			LS1X_IRQ(0, 0)
 #define LS1X_UART1_IRQ			LS1X_IRQ(0, 4)
 #define LS1X_UART2_IRQ			LS1X_IRQ(0, 5)
 #define LS1X_UART3_IRQ			LS1X_IRQ(0, 29)
