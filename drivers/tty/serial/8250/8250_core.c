@@ -3112,7 +3112,10 @@ static void __init serial8250_isa_init_ports(void)
 		 */
 		up->mcr_mask = ~ALPHA_KLUDGE_MCR;
 		up->mcr_force = ALPHA_KLUDGE_MCR;
-
+#ifdef CONFIG_LOONGSON1C_FIX_UART9_MCR
+		if(i==9) 
+			up->mcr_mask = ~1; //ls1c300b uart9 mcr(0xbfe4c904) = uart8_full_func
+#endif
 		port->ops = &serial8250_pops;
 	}
 
