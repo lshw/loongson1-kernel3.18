@@ -119,14 +119,18 @@ config LOONGSON1_LS1C300A
 
 config LOONGSON1_LS1C300B
 	bool
+
 endif
 
 endchoice
 
 config LS1X_CBUS_DUMP
-	bool "CBUS_REGS_DUMP"
-	depends on LOONGSON1_LS1C
+	bool "ls1x cbus dump"
 
+config LOONGSON1C_FIX_UART9_MCR
+	bool "ls1c-300b fix uart9 mcr
+	help
+	  ls1c-300b bug , uart8_full_func reg address = uart9 mcr address, maybe.
 
 config PWM_LS1X
 	tristate "Loongson1 PWM support"
