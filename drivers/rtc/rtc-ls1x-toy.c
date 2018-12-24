@@ -173,6 +173,11 @@ static int ls1x_rtc_probe(struct platform_device *pdev)
 	while (readl(SYS_COUNTER_CNTRL) & SYS_CNTRL_TTS)
 		usleep_range(1000, 3000);
 
+	/* Clear TOYMATCHs to prevent irq block whole system */
+	writel(0x0, SYS_TOYMATCH0);
+	writel(0x0, SYS_TOYMATCH1);
+	writel(0x0, SYS_TOYMATCH2);
+
 	rtcdev = devm_rtc_device_register(&pdev->dev, "ls1x-toy",
 					&ls1x_rtc_ops , THIS_MODULE);
 	if (IS_ERR(rtcdev)) {

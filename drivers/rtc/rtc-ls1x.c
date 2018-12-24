@@ -189,6 +189,8 @@ static irqreturn_t ls1x_rtc0_handler(int irq, void *rtc)
 	events |= RTC_IRQF | RTC_AF;
 	rtc_update_irq(rtc, 1, events);
 
+	writel(0x0, SYS_RTCMATCH0);
+
 	return IRQ_HANDLED;
 }
 
@@ -199,6 +201,8 @@ static irqreturn_t ls1x_rtc1_handler(int irq, void *rtc)
 	events |= RTC_IRQF | RTC_AF;
 	rtc_update_irq(rtc, 1, events);
 
+	writel(0x0, SYS_RTCMATCH1);
+
 	return IRQ_HANDLED;
 }
 
@@ -208,6 +212,8 @@ static irqreturn_t ls1x_rtc2_handler(int irq, void *rtc)
 
 	events |= RTC_IRQF | RTC_AF;
 	rtc_update_irq(rtc, 1, events);
+
+	writel(0x0, SYS_RTCMATCH2);
 
 	return IRQ_HANDLED;
 }
@@ -267,6 +273,11 @@ static int ls1x_rtc_probe(struct platform_device *pdev)
 		ret = PTR_ERR(rtcdev);
 		goto err;
 	}
+
+	/* Clear RTCMATCHs to prevent irq block whole system */
+	writel(0x0, SYS_RTCMATCH0);
+	writel(0x0, SYS_RTCMATCH1);
+	writel(0x0, SYS_RTCMATCH2);
 
 	platform_set_drvdata(pdev, rtcdev);
 
