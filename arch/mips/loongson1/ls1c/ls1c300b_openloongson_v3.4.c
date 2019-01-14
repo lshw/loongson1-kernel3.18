@@ -22,6 +22,7 @@
 #include <asm-generic/sizes.h>
 #include "cbus.h"
 #include <ls1x_nand.h>
+extern bool disable_gpio_58_77;
 static struct mtd_partition ls1x_nand_partitions[] = {
 	{
 		.name	= "kernel",
@@ -79,7 +80,7 @@ static struct mmc_spi_platform_data mmc_spi __maybe_unused = {
 #include <linux/spi/spi.h>
 #include <linux/spi/spi_ls1x.h>
 #if defined(CONFIG_SPI_CS_USED_GPIO)
-static int spi0_gpios_cs[] = { 81, 82, 83, 84 };
+static int spi0_gpios_cs[] = { 81, 82, 83 };
 #endif
 
 struct ls1x_spi_platform_data ls1x_spi0_platdata = {
@@ -154,18 +155,6 @@ static void ls1x_i2c_setup(void)
 	 * PIN3    GPIO76    I2C_SDA1
 	 * PIN6    GPIO77    I2C_SCL1
 	 */
-/*
-	gpio_func_dis(1,85);//sda0
-	gpio_func_dis(2,85);//sda0
-	gpio_func_dis(3,85);//sda0
-	gpio_func_dis(4,85);//sda0
-	gpio_func_dis(5,85);//sda0
-	gpio_func_dis(1,86);//scl0
-	gpio_func_dis(2,86);//scl0
-	gpio_func_dis(3,86);//scl0
-	gpio_func_dis(4,86);//scl0
-	gpio_func_dis(5,86);//scl0
-*/
 	gpio_func(4,50);//sda2
 	gpio_func(4,51);//scl2
 }
@@ -254,13 +243,6 @@ static struct platform_device ls1x_gpio_keys = {
 #include <linux/leds.h>
 struct gpio_led gpio_leds[] = {
 	{
-		.name			= "ok",
-		.gpio			= 6,
-		.active_low		= 1,
-//		.default_trigger	= "timer", /* 触发方式 */
-		.default_trigger	= NULL,
-		.default_state	= LEDS_GPIO_DEFSTATE_ON,
-	}, {
 		.name			= "led1",
 		.gpio			= 52,
 		.active_low		= 1,
@@ -348,8 +330,6 @@ static int __init ls1c_platform_init(void)
 	__raw_writel(__raw_readl(LS1X_CBUS_SECOND0) & (~0x0000003f), LS1X_CBUS_SECOND0);//P0,P1,P2,P3,P4,P5 Function2 disable
 	__raw_writel(__raw_readl(LS1X_CBUS_THIRD0) & (~0x0000003f), LS1X_CBUS_THIRD0); //P0,P1,P2,P3,P4,P5 Function3 disable
 
-	gpio_func(2,74);//rx0
-	gpio_func(2,75);//tx0
 	gpio_func(4,2);//rx1
 	gpio_func(4,3);//tx1
 //	gpio_func(4,4);//rx2
@@ -358,23 +338,29 @@ static int __init ls1c_platform_init(void)
 	gpio_func(2,37);//tx2 console
 	gpio_func(4,0);//rx3
 	gpio_func(4,1);//tx3
-	gpio_func(5,58);//rx4
-	gpio_func(5,59);//tx4
-	gpio_func(5,60);//rx5
-	gpio_func(5,61);//tx5
-	gpio_func(5,62);//rx6
-	gpio_func(5,63);//tx6
-	gpio_func(5,64);//rx7
-	gpio_func(5,65);//tx7
-	gpio_func(5,66);//rx8
-	gpio_func(5,67);//tx8
-	gpio_func(5,68);//rx9
-	gpio_func(5,69);//tx9
-	gpio_func(5,70);//rx10
-	gpio_func(5,71);//tx10
-	gpio_func(5,72);//rx11
-	gpio_func(5,73);//tx11
-
+	if(disable_gpio_58_77 == false){
+	pr_info("ls1c fbdev disabled,gpio58-77 enabled.\n");
+	printk(KERN_WARNING "ls1xfbdev is disabled by cmdline, then enable gpio58-77 output.\n");
+	gpio_func(2,74);//rx0
+	gpio_func(2,75);//tx0
+		gpio_func(5,58);//rx4
+		gpio_func(5,59);//tx4
+		gpio_func(5,60);//rx5
+		gpio_func(5,61);//tx5
+		gpio_func(5,62);//rx6
+		gpio_func(5,63);//tx6
+		gpio_func(5,64);//rx7
+		gpio_func(5,65);//tx7
+		gpio_func(5,66);//rx8
+		gpio_func(5,67);//tx8
+		gpio_func(5,68);//rx9
+		gpio_func(5,69);//tx9
+		gpio_func(5,70);//rx10
+		gpio_func(5,71);//tx10
+		gpio_func(5,72);//rx11
+		gpio_func(5,73);//tx11
+	}else
+	printk(KERN_WARNING "ls1xfbdev is enabled by cmdline, then disable gpio58-77 output.\n");
 	ls1x_serial_setup(&ls1x_uart_pdev);
 #ifdef CONFIG_LS1X_FB0
 	/* 使能LCD控制器 */
@@ -403,14 +389,13 @@ static int __init ls1c_platform_init(void)
 	gpio_request(DETECT_GPIO, "MMC_SPI GPIO detect");
 	gpio_direction_input(DETECT_GPIO);		/* 输入使能 */
 
-#if defined(CONFIG_PWM_LS1X_PWM2) || defined(CONFIG_PWM_LS1X_PWM3)
-	__raw_writel(__raw_readl(LS1X_CBUS_FIRST1) & (~0x00300000), LS1X_CBUS_FIRST1); //52,53 fun4 pwm
-	__raw_writel(__raw_readl(LS1X_CBUS_SECOND1) & (~0x00300000), LS1X_CBUS_SECOND1); 
-	__raw_writel(__raw_readl(LS1X_CBUS_THIRD1) & (~0x00300000), LS1X_CBUS_THIRD1);
-	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT1) | 0x00300000, LS1X_CBUS_FOURTHT1);
-	__raw_writel(__raw_readl(LS1X_CBUS_FIFTHT1) & (~0x00300000), LS1X_CBUS_THIRD1);
+#if defined(CONFIG_PWM_LS1X_PWM2)
+		gpio_func(4,52);//PWM2
 #endif
-
+#if defined(CONFIG_PWM_LS1X_PWM3)
+		gpio_func(4,53);//PWM3
+#endif
+	
 #ifdef CONFIG_SENSORS_LS1X
 	/* 使能ADC控制器 */
 //	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) & ~ADC_SHUT, LS1X_MUX_CTRL0);
