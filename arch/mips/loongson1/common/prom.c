@@ -23,6 +23,11 @@
 unsigned long ls1x_osc_clk;
 EXPORT_SYMBOL(ls1x_osc_clk);
 
+#if defined(CONFIG_LOONGSON1_LS1C) && defined(CONFIG_FB_LOONGSON1)
+bool disable_gpio_58_77;
+EXPORT_SYMBOL(disable_gpio_58_77);
+#endif
+
 int prom_argc;
 char **prom_argv, **prom_envp;
 unsigned long memsize, highmemsize;
@@ -99,6 +104,17 @@ void __init prom_init(void)
 #endif
 
 	prom_init_cmdline();
+
+#if defined(CONFIG_LOONGSON1_LS1C) && defined(CONFIG_FB_LOONGSON1)
+	/*启用LCD的时候，gpio58到gpio73不能用
+	 */
+	if(strstr(arcs_cmdline, "video=ls1")){
+		disable_gpio_58_77 = true;
+	}else{
+		disable_gpio_58_77 = false;
+	}
+
+#endif
 
 	ls1x_osc_clk = env_or_default("osc_clk", OSC);
 	memsize = env_or_default("memsize", DEFAULT_MEMSIZE);
