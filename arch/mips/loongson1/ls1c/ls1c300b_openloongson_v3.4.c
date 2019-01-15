@@ -7,7 +7,40 @@
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  */
-
+/*
+P06 LCD backlight
+P50 i2c2
+P51 i2c2
+P52 led1
+P53 led2
+P54 CAN
+P55 CAN
+P56 sdcard insert detect
+P85 key1
+P86 key2
+P2 rx1
+P3 tx1
+P0 rx3
+P1 tx3
+P36 rx2
+P37 tx2
+P46 tx6
+P47 rx6
+P48 tx11
+P49 rx11
+P78 tx5
+P79 rx4
+P80 tx4
+P81 rx5
+P82 tx10
+P84 rx10
+P85 rx9
+P86 tx9
+P87 rx7
+P88 tx7
+P89 rx8
+P90 tx8
+ */
 #include <linux/clk.h>
 #include <linux/gpio.h>
 #include <linux/err.h>
@@ -22,7 +55,6 @@
 #include <asm-generic/sizes.h>
 #include "cbus.h"
 #include <ls1x_nand.h>
-extern bool disable_gpio_58_77;
 static struct mtd_partition ls1x_nand_partitions[] = {
 	{
 		.name	= "kernel",
@@ -80,7 +112,7 @@ static struct mmc_spi_platform_data mmc_spi __maybe_unused = {
 #include <linux/spi/spi.h>
 #include <linux/spi/spi_ls1x.h>
 #if defined(CONFIG_SPI_CS_USED_GPIO)
-static int spi0_gpios_cs[] = { 81, 82, 83 };
+static int spi0_gpios_cs[] = { 81, 82, 83, 84};
 #endif
 
 struct ls1x_spi_platform_data ls1x_spi0_platdata = {
@@ -151,9 +183,6 @@ static void ls1x_i2c_setup(void)
 	/*
 	 * PIN74    GPIO85    I2C_SDA0
 	 * PIN75    GPIO86    I2C_SCL0
-	 *
-	 * PIN3    GPIO76    I2C_SDA1
-	 * PIN6    GPIO77    I2C_SCL1
 	 */
 	gpio_func(4,50);//sda2
 	gpio_func(4,51);//scl2
@@ -210,14 +239,6 @@ static struct gpio_keys_button ls1x_gpio_keys_buttons[] = {
 		.gpio		= 86,
 		.active_low	= 1,
 		.desc		= "1",
-		.wakeup		= 1,
-		.debounce_interval	= 10, /* debounce ticks interval in msecs */
-	},
-	{
-		.code		= KEY_2,
-		.gpio		= 92,
-		.active_low	= 1,
-		.desc		= "2",
 		.wakeup		= 1,
 		.debounce_interval	= 10, /* debounce ticks interval in msecs */
 	},
@@ -332,35 +353,23 @@ static int __init ls1c_platform_init(void)
 
 	gpio_func(4,2);//rx1
 	gpio_func(4,3);//tx1
-//	gpio_func(4,4);//rx2
-//	gpio_func(4,5);//tx2
 	gpio_func(2,36);//rx2 console
 	gpio_func(2,37);//tx2 console
 	gpio_func(4,0);//rx3
 	gpio_func(4,1);//tx3
-	if(disable_gpio_58_77 == false){
-	pr_info("ls1c fbdev disabled,gpio58-77 enabled.\n");
-	printk(KERN_WARNING "ls1xfbdev is disabled by cmdline, then enable gpio58-77 output.\n");
-	gpio_func(2,74);//rx0
-	gpio_func(2,75);//tx0
-		gpio_func(5,58);//rx4
-		gpio_func(5,59);//tx4
-		gpio_func(5,60);//rx5
-		gpio_func(5,61);//tx5
-		gpio_func(5,62);//rx6
-		gpio_func(5,63);//tx6
-		gpio_func(5,64);//rx7
-		gpio_func(5,65);//tx7
-		gpio_func(5,66);//rx8
-		gpio_func(5,67);//tx8
-		gpio_func(5,68);//rx9
-		gpio_func(5,69);//tx9
-		gpio_func(5,70);//rx10
-		gpio_func(5,71);//tx10
-		gpio_func(5,72);//rx11
-		gpio_func(5,73);//tx11
-	}else
-	printk(KERN_WARNING "ls1xfbdev is enabled by cmdline, then disable gpio58-77 output.\n");
+
+	gpio_func(5,47);//rx6
+	gpio_func(5,46);//tx6
+	gpio_func(5,87);//rx7
+	gpio_func(5,88);//tx7
+	gpio_func(5,89);//rx8
+	gpio_func(5,90);//tx8
+	gpio_func(5,85);//rx9
+	gpio_func(5,86);//tx9
+	gpio_func(5,84);//rx10
+	gpio_func(5,82);//tx10
+	gpio_func(5,49);//rx11
+	gpio_func(5,48);//tx11
 	ls1x_serial_setup(&ls1x_uart_pdev);
 #ifdef CONFIG_LS1X_FB0
 	/* 使能LCD控制器 */
