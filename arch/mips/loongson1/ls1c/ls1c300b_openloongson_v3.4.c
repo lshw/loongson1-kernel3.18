@@ -364,8 +364,8 @@ static int __init ls1c_platform_init(void)
 	gpio_func(5,88);//tx7
 	gpio_func(5,89);//rx8
 	gpio_func(5,90);//tx8
-	gpio_func(5,85);//rx9
-	gpio_func(5,86);//tx9
+	//gpio_func(5,85);//rx9 //key1
+	//gpio_func(5,86);//tx9 //key2
 	gpio_func(5,84);//rx10
 	gpio_func(5,82);//tx10
 	gpio_func(5,49);//rx11
