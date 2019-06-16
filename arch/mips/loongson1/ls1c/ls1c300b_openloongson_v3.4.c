@@ -145,9 +145,21 @@ static struct spi_board_info ls1x_spi0_devices[] = {
 
 #include <linux/i2c.h>
 static struct i2c_board_info ls1x_i2c0_board_info[] = {
+#ifdef CONFIG_LS1C_OPENLOONGSON_ROBOT_BOARD_B
+//机器人扩展板
+	{
+		I2C_BOARD_INFO("pca9685", 0x40),
+	},
+#endif
 };
 
 static struct i2c_board_info ls1x_i2c1_board_info[] = {
+#ifdef CONFIG_LS1C_OPENLOONGSON_ROBOT_BOARD_B
+//机器人扩展板
+	{
+		I2C_BOARD_INFO("pca9685", 0x40),
+	},
+#endif
 };
 
 static struct i2c_board_info ls1x_i2c2_board_info[] = {
@@ -178,12 +190,14 @@ static void ls1x_i2c_setup(void)
 	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) & (~I2C0_SHUT), LS1X_MUX_CTRL0);
 	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) & (~I2C1_SHUT), LS1X_MUX_CTRL0);
 	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) & (~I2C2_SHUT), LS1X_MUX_CTRL0);
-	__raw_writel(__raw_readl(LS1X_GPIO_CFG2) & ~(3<<(85-64)), LS1X_GPIO_CFG2); //关闭GPIO85/86
-
-	/*
-	 * PIN74    GPIO85    I2C_SDA0
-	 * PIN75    GPIO86    I2C_SCL0
-	 */
+//	__raw_writel(__raw_readl(LS1X_GPIO_CFG2) & ~(3<<(85-64)), LS1X_GPIO_CFG2); //关闭GPIO85/86 就启用了默认功能 i2c0
+#ifdef CONFIG_LS1C_OPENLOONGSON_ROBOT_BOARD_B
+//机器人扩展板
+	gpio_func(2,0);   //sda0
+	gpio_func(2,1);   //scl0
+	gpio_func(2,2);   //sda1
+	gpio_func(2,3);   //scl1
+#endif
 	gpio_func(4,50);//sda2
 	gpio_func(4,51);//scl2
 }
@@ -350,13 +364,15 @@ static int __init ls1c_platform_init(void)
 	__raw_writel(__raw_readl(LS1X_CBUS_FIRST0) & (~0x0000003f), LS1X_CBUS_FIRST0);//P0,P1,P2,P3,P4,P5 Function1 disable
 	__raw_writel(__raw_readl(LS1X_CBUS_SECOND0) & (~0x0000003f), LS1X_CBUS_SECOND0);//P0,P1,P2,P3,P4,P5 Function2 disable
 	__raw_writel(__raw_readl(LS1X_CBUS_THIRD0) & (~0x0000003f), LS1X_CBUS_THIRD0); //P0,P1,P2,P3,P4,P5 Function3 disable
-
+#ifndef CONFIG_LS1C_OPENLOONGSON_ROBOT_BOARD_B
+//机器人板，用P0-P3作为2个I2C接口
 	gpio_func(4,2);//rx1
 	gpio_func(4,3);//tx1
-	gpio_func(2,36);//rx2 console
-	gpio_func(2,37);//tx2 console
 	gpio_func(4,0);//rx3
 	gpio_func(4,1);//tx3
+#endif
+	gpio_func(2,36);//rx2 console
+	gpio_func(2,37);//tx2 console
 
 	gpio_func(5,47);//rx6
 	gpio_func(5,46);//tx6

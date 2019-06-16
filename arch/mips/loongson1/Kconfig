@@ -100,6 +100,22 @@ config LS1C_OPENLOONGSON_BOARD
 	  uart9 rx:p85,tx:p86
 	  uart10 rx:p84,tx:p82
 	  uart11 rx:p49,tx:p48
+
+config LS1C_OPENLOONGSON_ROBOT_BOARD_B
+	bool "openloongson board (ls1c300B) smartloongson robot"
+	select LOONGSON1_LS1C300B
+        select PWM_PCA9685
+	help
+          PWM0-PWM31
+	  uart2 rx:p35,tx:p36
+	  uart4 rx:p80,tx:p79
+	  uart5 rx:p81(no_out),tx:p78
+	  uart6 rx:p47,tx:p46
+	  uart7 rx:p87,tx:p88
+	  uart8 rx:p89,tx:p90
+	  uart9 rx:p85,tx:p86
+	  uart10 rx:p84,tx:p82
+	  uart11 rx:p49,tx:p48
 endchoice
 
 config LOONGSON1_LS1C300A
