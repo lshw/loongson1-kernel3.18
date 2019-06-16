@@ -116,7 +116,7 @@ config LS1X_CBUS_DUMP
 	bool "ls1x cbus dump"
 
 config LOONGSON1C_FIX_UART9_MCR
-	bool "ls1c-300b fix uart9 mcr
+	bool "ls1c-300b fix uart9 mcr"
 	help
 	  ls1c-300b bug , uart8_full_func reg address = uart9 mcr address, maybe.
 
