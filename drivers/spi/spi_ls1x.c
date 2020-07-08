@@ -198,12 +198,14 @@ static int ls1x_spi_setup_transfer(struct spi_device *spi,
 
 	ret = readb(hw->base + REG_SPCR);
 	ret = ret & 0xf0;
-	ret = ret | (hw->mode << 2) | (hw->div & 0x03);
+	ret = ret | (hw->mode << 2)  | (hw->div & 0x03); //最高速
+	ret = ret & 0xfc;
 	writeb(ret, hw->base + REG_SPCR);
 
 	ret = readb(hw->base + REG_SPER);
 	ret = ret & 0xfc;
-	ret = ret | (hw->div >> 2);
+	ret = ret | (hw->div >> 2); //最高速
+	ret = ret & 0xfc;
 	writeb(ret, hw->base + REG_SPER);
 
 	return 0;
@@ -396,6 +398,9 @@ static void ls1x_spi_hw_init(struct ls1x_spi *hw)
 	/* 关闭SPI flash */
 	val = readb(hw->base + REG_PARAM);
 	val &= 0xfe;
+	val |= 0xe; //双I/O，快速读，连续读
+//	val &= 0x0f;
+//	val|=0x10; //分频clk_div=1
 	writeb(val, hw->base + REG_PARAM);
 	/* SPI flash时序控制寄存器 */
 	writeb(0x05, hw->base + REG_TIMING);
