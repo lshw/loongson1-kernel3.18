@@ -7,3 +7,4 @@ obj-$(CONFIG_LS1C_CBV0B_BOARD) += ls1c300a_cbv0b_board.o
 obj-$(CONFIG_LS1C_OPENLOONGSON_ROBOT_BOARD) += ls1c300a_openloongson_robot_board.o
 obj-$(CONFIG_LS1C_OPENLOONGSON_ROBOT_BOARD_B) += ls1c300b_openloongson_v3.4.o
 obj-$(CONFIG_LS1C_OPENLOONGSON_BOARD) += ls1c300b_openloongson_v3.4.o
+obj-$(CONFIG_LS1C_H212_RTU_BOARD) += ls1c300b_h212rtu.o
