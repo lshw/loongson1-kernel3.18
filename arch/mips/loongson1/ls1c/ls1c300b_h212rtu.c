@@ -63,8 +63,6 @@ static struct flash_platform_data ls1x_spi_flash_data = {
 
 #include <linux/spi/mmc_spi.h>
 #include <linux/mmc/host.h>
-/* 开发板使用GPIO6引脚作为MMC/SD卡的插拔探测引脚 */
-#define DETECT_GPIO  56
 
 static struct mmc_spi_platform_data mmc_spi __maybe_unused = {
 	.caps = MMC_CAP_NEEDS_POLL,
@@ -372,10 +370,6 @@ static int __init ls1c_platform_init(void)
 //关闭iis
 	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) | I2S_SHUT, LS1X_MUX_CTRL0);
 
-	/* 轮询方式或中断方式探测card的插拔 */
-	gpio_request(DETECT_GPIO, "MMC_SPI GPIO detect");
-	gpio_direction_input(DETECT_GPIO);		/* 输入使能 */
-	
 #if defined(CONFIG_PWM_LS1X_PWM2)
                gpio_func(4,52);//PWM2
 #endif

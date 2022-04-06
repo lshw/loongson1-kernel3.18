@@ -899,32 +899,6 @@ struct platform_device ls1x_sja1000_1 = {
 #endif //#ifdef CONFIG_LS1X_CAN1
 #endif //#ifdef CONFIG_CAN_SJA1000_PLATFORM
 
-#if defined(CONFIG_MMC_LS1X)
-extern struct ls1x_mci_pdata ls1x_sdio_parts;
-static struct resource ls1x_sdio_resources[] = {
-	[0] = {
-		.start          = LS1X_SDIO_BASE,
-		.end            = LS1X_SDIO_BASE + SZ_16K - 1,
-		.flags          = IORESOURCE_MEM,
-	},
-	[1] = {
-		.start          = LS1X_SDIO_IRQ,
-		.end            = LS1X_SDIO_IRQ,
-		.flags          = IORESOURCE_IRQ,
-	},
-};
-
-struct platform_device ls1x_sdio_pdev = {
-	.name	= "ls1x-sdi",
-	.id	= -1,
-	.num_resources	= ARRAY_SIZE(ls1x_sdio_resources),
-	.resource		= ls1x_sdio_resources,
-	.dev	= {
-		.platform_data = &ls1x_sdio_parts,
-	},
-};
-#endif //CONFIG_MTD_SDIO_LS1X
-
 #ifdef CONFIG_USB_DWC2
 #include <linux/platform_data/s3c-hsotg.h>
 static int ls1x_otg_phy_init(struct platform_device *pdev, int type)

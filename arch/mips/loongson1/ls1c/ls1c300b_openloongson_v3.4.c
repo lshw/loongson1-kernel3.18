@@ -96,12 +96,6 @@ static struct flash_platform_data ls1x_spi_flash_data = {
 
 #include <linux/spi/mmc_spi.h>
 #include <linux/mmc/host.h>
-/* 开发板使用GPIO6引脚作为MMC/SD卡的插拔探测引脚 */
-#define DETECT_GPIO  56
-//static int mmc_spi_get_cd(struct device *dev)
-//{
-//	return !gpio_get_value(DETECT_GPIO);
-//}
 
 static struct mmc_spi_platform_data mmc_spi __maybe_unused = {
 //	.get_cd = mmc_spi_get_cd,
@@ -308,7 +302,6 @@ static struct platform_device leds = {
 };
 #endif //#if defined(CONFIG_LEDS_GPIO) || defined(CONFIG_LEDS_GPIO_MODULE)
 
-
 static struct platform_device *ls1c_platform_devices[] __initdata = {
 	&ls1x_uart_pdev,
 	&ls1x_nand_pdev,
@@ -410,9 +403,6 @@ static int __init ls1c_platform_init(void)
 
 //关闭iis
 	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) | I2S_SHUT, LS1X_MUX_CTRL0);
-	/* 轮询方式或中断方式探测card的插拔 */
-	gpio_request(DETECT_GPIO, "MMC_SPI GPIO detect");
-	gpio_direction_input(DETECT_GPIO);		/* 输入使能 */
 
 #if defined(CONFIG_PWM_LS1X_PWM2)
 		gpio_func(4,52);//PWM2
@@ -420,7 +410,15 @@ static int __init ls1c_platform_init(void)
 #if defined(CONFIG_PWM_LS1X_PWM3)
 		gpio_func(4,53);//PWM3
 #endif
-	
+
+#ifdef CONFIG_SPI_LS1X_SPI0
+	spi_register_board_info(ls1x_spi0_devices, ARRAY_SIZE(ls1x_spi0_devices));
+#endif
+
+#ifdef CONFIG_SPI_LS1X_SPI1
+	spi_register_board_info(ls1x_spi1_devices, ARRAY_SIZE(ls1x_spi1_devices));
+#endif
+
 #ifdef CONFIG_SENSORS_LS1X
 	/* 使能ADC控制器 */
 //	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) & ~ADC_SHUT, LS1X_MUX_CTRL0);
