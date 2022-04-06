@@ -20,81 +20,7 @@
 #include <linux/stmmac.h>
 
 #include <asm-generic/sizes.h>
-
-#define CBUS_MUX(func, r) \
-                ((void __iomem *)0xbfd011c0 + ((func -1) * 0x10) + (4*r))
-#define CBUSS(func, r) \
-                0x11c0 + ((func -1) * 0x10) + (4*r)
-void cbus_dump(void) {
-#ifdef CONFIG_LS1X_CBUS_DUMP
-	int16_t i;
-	char buff[500];
-	printk(KERN_ERR "gpio  ==SHUT_CTRL=[%08x]==uart0fu=[%08x]==uart8fu=[%08x]=========\n",__raw_readl(LS1X_MUX_CTRL0),__raw_readl((void __iomem *)0xbfd00420),__raw_readl((void __iomem *)0xbfe4c904));
-	printk(KERN_ERR "gpio  31-----0 63----32 95----64 127---96\n");
-
-	for(i=0;i<5;i++) {
-		printk(KERN_ERR "fun%d: %08x %08x %08x %08x\n",i+1,
-__raw_readl((void __iomem *)0xbfd011c0+i*0x10),
-__raw_readl((void __iomem *)0xbfd011c0+i*0x10+4),
-__raw_readl((void __iomem *)0xbfd011c0+i*0x10+8),
-__raw_readl((void __iomem *)0xbfd011c0+i*0x10+0xc));
-		//printk(KERN_ERR buff);
-	}
-for(i=0;i<128;i++) {
-sprintf(buff,"gpio%d:fun",i);
-if(__raw_readl((void __iomem *)0xbfd011c0+(i/32)*4) & (1<<(i%32))) {
-printk(KERN_ERR "%s1\n",buff);
-continue;
-}
-if(__raw_readl((void __iomem *)0xbfd011d0+(i/32)*4) & (1<<(i%32))) {
-printk(KERN_ERR "%s2\n",buff);
-continue;
-}
-if(__raw_readl((void __iomem *)0xbfd011e0+(i/32)*4) & (1<<(i%32))) {
-printk(KERN_ERR "%s3\n",buff);
-continue;
-}
-if(__raw_readl((void __iomem *)0xbfd011f0+(i/32)*4) & (1<<(i%32))) {
-printk(KERN_ERR "%s4\n",buff);
-continue;
-}
-if(__raw_readl((void __iomem *)0xbfd01200+(i/32)*4) & (1<<(i%32))) {
-printk(KERN_ERR "%s5\n",buff);
-continue;
-}
-}
-
-#endif// CONFIG_LS1X_CBUS_DUMP
-}
-void gpio_func(uint8_t func,uint8_t gpio_no) {
-	uint8_t i,regno,regbit;
-	uint32_t data=0;
-	regno=(uint8_t) gpio_no/32;
-	regbit=gpio_no % 32;
-	//cbus_dump();
-	data=__raw_readl(CBUS_MUX(func,regno));
-	for(i=1;i<6;i++){
-		if(i<func)
-			__raw_writel(__raw_readl(CBUS_MUX(i,regno)) & ~(1<<regbit),CBUS_MUX(i,regno));
-		else {
-			__raw_writel(__raw_readl(CBUS_MUX(i,regno)) | (1<<regbit),CBUS_MUX(i,regno));
-			break;
-		}
-	}
-	printk(KERN_ERR "set gpio%d,fun%d,addr=[0xbfd0%x] %08x | %08x = %08x\n", gpio_no,func,CBUSS(func,regno),data,1<<regbit,__raw_readl(CBUS_MUX(func,regno)));
-	//cbus_dump();
-}
-
-void gpio_func_dis(uint8_t func,uint8_t gpio_no) {
-	uint8_t regno,regbit;
-	regno=(uint8_t) gpio_no/32;
-	regbit=gpio_no % 32;
-	__raw_writel(__raw_readl(CBUS_MUX(func,regno)) & ~(1<<regbit),CBUS_MUX(func,regno));
-	printk(KERN_ERR "disable gpio%d,fun%d\n", gpio_no,func);
-
-}
-
-
+#include "cbus.h"
 #include <ls1x_nand.h>
 static struct mtd_partition ls1x_nand_partitions[] = {
 	{
@@ -139,13 +65,8 @@ static struct flash_platform_data ls1x_spi_flash_data = {
 #include <linux/mmc/host.h>
 /* 开发板使用GPIO6引脚作为MMC/SD卡的插拔探测引脚 */
 #define DETECT_GPIO  56
-//static int mmc_spi_get_cd(struct device *dev)
-//{
-//	return !gpio_get_value(DETECT_GPIO);
-//}
 
 static struct mmc_spi_platform_data mmc_spi __maybe_unused = {
-//	.get_cd = mmc_spi_get_cd,
 	.caps = MMC_CAP_NEEDS_POLL,
 	.ocr_mask = MMC_VDD_32_33 | MMC_VDD_33_34, /* 3.3V only */
 };
@@ -153,7 +74,7 @@ static struct mmc_spi_platform_data mmc_spi __maybe_unused = {
 #include <linux/spi/spi.h>
 #include <linux/spi/spi_ls1x.h>
 #if defined(CONFIG_SPI_CS_USED_GPIO)
-static int spi0_gpios_cs[] = { 81, 82, 83, 84 };
+static int spi0_gpios_cs[] = { 81, 82, 83, 84};
 #endif
 
 struct ls1x_spi_platform_data ls1x_spi0_platdata = {
@@ -219,27 +140,6 @@ static void ls1x_i2c_setup(void)
 	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) & (~I2C0_SHUT), LS1X_MUX_CTRL0);
 	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) & (~I2C1_SHUT), LS1X_MUX_CTRL0);
 	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) & (~I2C2_SHUT), LS1X_MUX_CTRL0);
-	__raw_writel(__raw_readl(LS1X_GPIO_CFG2) & ~(3<<(85-64)), LS1X_GPIO_CFG2); //关闭GPIO85/86
-
-	/*
-	 * PIN74    GPIO85    I2C_SDA0
-	 * PIN75    GPIO86    I2C_SCL0
-	 *
-	 * PIN3    GPIO76    I2C_SDA1
-	 * PIN6    GPIO77    I2C_SCL1
-	 */
-/*
-	gpio_func_dis(1,85);//sda0
-	gpio_func_dis(2,85);//sda0
-	gpio_func_dis(3,85);//sda0
-	gpio_func_dis(4,85);//sda0
-	gpio_func_dis(5,85);//sda0
-	gpio_func_dis(1,86);//scl0
-	gpio_func_dis(2,86);//scl0
-	gpio_func_dis(3,86);//scl0
-	gpio_func_dis(4,86);//scl0
-	gpio_func_dis(5,86);//scl0
-*/
 	gpio_func(4,50);//sda2
 	gpio_func(4,51);//scl2
 }
@@ -308,7 +208,6 @@ static struct gpio_keys_button ls1x_gpio_keys_buttons[] = {
 	},
 };
 
-
 static struct gpio_keys_platform_data ls1x_gpio_keys_data = {
 	.nbuttons = ARRAY_SIZE(ls1x_gpio_keys_buttons),
 	.buttons = ls1x_gpio_keys_buttons,
@@ -364,7 +263,6 @@ static struct platform_device leds = {
 	}
 };
 #endif //#if defined(CONFIG_LEDS_GPIO) || defined(CONFIG_LEDS_GPIO_MODULE)
-
 
 static struct platform_device *ls1c_platform_devices[] __initdata = {
 	&ls1x_uart_pdev,
@@ -473,16 +371,25 @@ static int __init ls1c_platform_init(void)
 
 //关闭iis
 	__raw_writel(__raw_readl(LS1X_MUX_CTRL0) | I2S_SHUT, LS1X_MUX_CTRL0);
+
 	/* 轮询方式或中断方式探测card的插拔 */
 	gpio_request(DETECT_GPIO, "MMC_SPI GPIO detect");
 	gpio_direction_input(DETECT_GPIO);		/* 输入使能 */
+	
+#if defined(CONFIG_PWM_LS1X_PWM2)
+               gpio_func(4,52);//PWM2
+#endif
 
-#if defined(CONFIG_PWM_LS1X_PWM2) || defined(CONFIG_PWM_LS1X_PWM3)
-	__raw_writel(__raw_readl(LS1X_CBUS_FIRST1) & (~0x00300000), LS1X_CBUS_FIRST1); //52,53 fun4 pwm
-	__raw_writel(__raw_readl(LS1X_CBUS_SECOND1) & (~0x00300000), LS1X_CBUS_SECOND1); 
-	__raw_writel(__raw_readl(LS1X_CBUS_THIRD1) & (~0x00300000), LS1X_CBUS_THIRD1);
-	__raw_writel(__raw_readl(LS1X_CBUS_FOURTHT1) | 0x00300000, LS1X_CBUS_FOURTHT1);
-	__raw_writel(__raw_readl(LS1X_CBUS_FIFTHT1) & (~0x00300000), LS1X_CBUS_THIRD1);
+#if defined(CONFIG_PWM_LS1X_PWM3)
+               gpio_func(4,53);//PWM3
+#endif
+
+#ifdef CONFIG_SPI_LS1X_SPI0
+	spi_register_board_info(ls1x_spi0_devices, ARRAY_SIZE(ls1x_spi0_devices));
+#endif
+
+#ifdef CONFIG_SPI_LS1X_SPI1
+	spi_register_board_info(ls1x_spi1_devices, ARRAY_SIZE(ls1x_spi1_devices));
 #endif
 
 #ifdef CONFIG_SENSORS_LS1X
