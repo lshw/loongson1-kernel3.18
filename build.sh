@@ -1,37 +1,29 @@
 #!/bin/sh
-echo -e "step0: Setup ENV ..."
-export PATH=/opt/gcc-4.3-ls232/bin:$PATH
-export ARCH=mips
-export CROSS_COMPILE=mipsel-linux-
-export MAKE_NPROC=-j`nproc`
-export MKIME=mkimage
-echo -e "OK :-)\n"
 
-echo -e "step1: Config kernel ..."
-if [ ! -f ./.config ]; then
-	make ls1c300a_openloongson_robot_defconfig
+if ! [ -x /opt/gcc-4.9-ls232 ]  ; then
+wget https://mirrors.tuna.tsinghua.edu.cn/loongson/loongson1c_bsp/gcc-4.9/gcc-4.9-ls232.tar.xz -c
+if [ $? != 0 ] ; then
+wget https://www.anheng.com.cn/loongson/loongson1c_bsp/gcc-4.9/gcc-4.9-ls232.tar.xz -c
 fi
-echo -e "OK :-)\n"
-
-echo -e "step2: Build kernel ..."
-make $MAKE_NPROC
-if [ $? -eq 0 ]; then
-	echo -e "OK :-)\n"
-else
-	echo -e "Fail !!! :-(\n"
-	exit 1
+tar Jxvf gcc-4.9-ls232.tar.xz -C /opt
 fi
+PATH=/opt/gcc-4.9-ls232/bin:$PATH
+export PATH="/opt/gcc-4.9-ls232/bin:$PATH"
 
-ENTRY_ADDR=`${CROSS_COMPILE}readelf -e vmlinux | grep "Entry point address" | awk '{print $4}'`
+pkgver=`date +%Y%m%d`
 
-echo -e "step3: Make uImage ..."
-$MKIME -A mips -O linux -T kernel -C gzip -a 0x80200000 -e $ENTRY_ADDR -n "Linux-3.18" -d arch/mips/boot/compressed/vmlinux.bin.z uImage
-if [ $? -eq 0 ]; then
-	cp vmlinuz /srv/tftpboot/vmlinuz
-	echo -e "OK :-)\n"
-else
-	echo -e "Fail !!! :-(\n"
-	exit 1
-fi
+apt-get install libncurses5-dev
+export CONCURRENCY_LEVEL=8
+#make ARCH=mips CROSS_COMPILE=mipsel-linux- menuconfig
+export CFLAGS="  -Wno-unused-but-set-variable" 
+rm -f debian/stamp/binary/* debian/stamp/install/* debian/stamp/build/*
 
-exit 0
+#make ARCH=mips CROSS_COMPILE=mipsel-linux-  vmlinuz -j 8 
+
+make ARCH=mips CROSS_COMPILE=mipsel-linux-  deb-pkg -j 8 \
+LOCALVERSION=-openloongson \
+KDEB_PKGVERSION=$pkgver
+
+ls ../linux-*${pkgver}* -l
+exit
+
