@@ -53,7 +53,7 @@ P90 tx8
 #include <linux/stmmac.h>
 
 #include <asm-generic/sizes.h>
-#include "cbus.h"
+#include <cbus.h>
 #include <ls1x_nand.h>
 static struct mtd_partition ls1x_nand_partitions[] = {
 	{

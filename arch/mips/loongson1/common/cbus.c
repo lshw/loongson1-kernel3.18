@@ -1,5 +1,9 @@
 #ifndef _GPIO_CBUS_H_
 #define _GPIO_CBUS_H_
+
+#include <platform.h>
+#include <loongson1.h>
+
 /* set gpio func CBUS */
 
 //void cbus_dump(void);
